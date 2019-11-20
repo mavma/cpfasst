@@ -1,4 +1,4 @@
-FSRC = interface.f90
+FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
 CSRC = cmain.c
 
 CC = mpicc

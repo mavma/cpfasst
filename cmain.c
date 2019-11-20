@@ -21,8 +21,10 @@
 // }
 
 // TODO: handle type conversion from fortran with typedefs for readability
+void __probin_MOD_probin_init(char*, uint32_t);
 void __cadapt_MOD_c_pf_mpi_create(int*);
 void __cadapt_MOD_c_pf_pfasst_create(int*, char*, bool*, uint32_t);
+void __cadapt_MOD_c_user_obj_allocate();
 
 void run_pfasst();
 
@@ -41,11 +43,11 @@ int main(int argc, char** argv) {
 
 void run_pfasst() {
 
-    char pf_fname[256] = "LibPFASST/Tutorials/EX1_Dahlquist/probin.nml";
+    char pf_fname[256];
 
     // !> Read problem parameters
     //printf("call probin_init(pf_fname)\n");
-    //__probin_MOD_probin_init(pf_fname, 256L);
+    __probin_MOD_probin_init(pf_fname, 256L);
 
     // !>  Set up communicator
     printf("call pf_mpi_create(comm, MPI_COMM_WORLD)\n");
@@ -57,20 +59,8 @@ void run_pfasst() {
     __cadapt_MOD_c_pf_pfasst_create(NULL, pf_fname, NULL, 256L);
 
     // // !> Loop over levels and set some level specific parameters
-
-    // do l = 1, pf%nlevels
-    //    !>  Allocate the user specific level object
-    //    allocate(my_level_t::pf%levels(l)%ulevel)
-
-    //    !>  Allocate the user specific data constructor
-    //    allocate(pf_ndarray_factory_t::pf%levels(l)%ulevel%factory)
-
-    //    !>  Allocate the sweeper at this level
-    //    allocate(my_sweeper_t::pf%levels(l)%ulevel%sweeper)
-
-    //    !>  Set the size of the data on this level (here just one)
-    //    call pf_level_set_size(pf,l,[1])
-    // end do
+    printf("do l = 1, pf%nlevels ...\n");
+    __cadapt_MOD_c_user_obj_allocate();
 
     // !>  Set up some pfasst stuff
     // call pf_pfasst_setup(pf)
