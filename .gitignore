@@ -1,4 +1,5 @@
 *.o
 *.mod
 symbols
-cflink
+cmain
+fmain

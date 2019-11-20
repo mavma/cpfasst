@@ -25,6 +25,7 @@ void __probin_MOD_probin_init(char*, uint32_t);
 void __cadapt_MOD_c_pf_mpi_create(int*);
 void __cadapt_MOD_c_pf_pfasst_create(int*, char*, bool*, uint32_t);
 void __cadapt_MOD_c_user_obj_allocate();
+void __cadapt_MOD_c_pf_pfasst_setup();
 
 void run_pfasst();
 
@@ -58,12 +59,13 @@ void run_pfasst() {
     printf("call pf_pfasst_create(pf, comm, fname=pf_fname)\n");
     __cadapt_MOD_c_pf_pfasst_create(NULL, pf_fname, NULL, 256L);
 
-    // // !> Loop over levels and set some level specific parameters
+    // !> Loop over levels and set some level specific parameters
     printf("do l = 1, pf%nlevels ...\n");
     __cadapt_MOD_c_user_obj_allocate();
 
     // !>  Set up some pfasst stuff
-    // call pf_pfasst_setup(pf)
+    printf("call pf_pfasst_setup(pf)");
+    __cadapt_MOD_c_pf_pfasst_setup();
 
     // !> add some hooks for output  (using a LibPFASST hook here)
     // call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)

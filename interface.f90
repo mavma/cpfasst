@@ -41,4 +41,8 @@ contains
     end do
   end subroutine c_user_obj_allocate
 
+  subroutine c_pf_pfasst_setup()
+    call pf_pfasst_setup(pf_pfasst)
+  end subroutine c_pf_pfasst_setup
+
 end module cadapt

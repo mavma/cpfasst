@@ -1,3 +1,10 @@
 {
-    "fortran.includePaths": ["LibPFASST/include"]
+    "fortran.includePaths": ["/home/mari/dev/cPFASST/LibPFASST/include"],
+    "files.exclude": {
+        "**/.git": true,
+        "**/*.o": true,
+        "fmain": true,
+        "cmain": true,
+        "*.mod": true
+    }
 }

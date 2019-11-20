@@ -1,5 +1,5 @@
+CSRC = 
 FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
-CSRC = cmain.c
 
 CC = mpicc
 FC = mpif90
@@ -15,7 +15,7 @@ LDFLAGS += -LLibPFASST/lib -lpfasst
 LDFLAGS += -lgfortran -lquadmath 
 LDFLAGS += $(shell mpif90 --showme:link)
 
-all: libpfasst cflink
+all: libpfasst cmain fmain
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -23,11 +23,15 @@ all: libpfasst cflink
 %.o: %.f90
 	$(FC) -c -w $< $(FFLAGS)
 
-cflink: $(OBJ)
+cmain: cmain.o $(OBJ)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+fmain: fmain.o $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 libpfasst:
-	cd LibPFASST; $(MAKE)
+	cd LibPFASST; $(MAKE) DEBUG=TRUE
 
 clean:
 	\rm -f *.o *.mod cflink
+	cd LibPFASST; $(MAKE) clean
