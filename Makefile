@@ -2,20 +2,21 @@ CSRC =
 FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
 
 CC = mpicc
+CFLAGS = -g -Og -I.
+CLDFLAGS += -LLibPFASST/lib -lpfasst
+CLDFLAGS += -lgfortran -lquadmath 
+CLDFLAGS += $(shell mpif90 --showme:link)
+
 FC = mpif90
-# CC = gcc
-# FC = gfortran
-CFLAGS=-g -Og -I.
-FFLAGS=-g -Og -ILibPFASST/include
+FFLAGS = -g -Og -ILibPFASST/include
+FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
+# FLDFLAGS += -LLibPFASST/lib -lpfasst
+# FLDFLAGS += $(shell mpicc --showme:link)
 
-OBJ += $(FSRC:.f90=.o)
 OBJ += $(CSRC:.c=.o)
+OBJ += $(FSRC:.f90=.o)
 
-LDFLAGS += -LLibPFASST/lib -lpfasst
-LDFLAGS += -lgfortran -lquadmath 
-LDFLAGS += $(shell mpif90 --showme:link)
-
-all: libpfasst cmain fmain
+all: cmain fmain
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -24,14 +25,16 @@ all: libpfasst cmain fmain
 	$(FC) -c -w $< $(FFLAGS)
 
 cmain: cmain.o $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(CLDFLAGS)
 
 fmain: fmain.o $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(CLDFLAGS)
+
+$(OBJ): libpfasst
 
 libpfasst:
 	cd LibPFASST; $(MAKE) DEBUG=TRUE
 
 clean:
-	\rm -f *.o *.mod cflink
+	\rm -f *.o *.mod cmain fmain
 	cd LibPFASST; $(MAKE) clean

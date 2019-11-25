@@ -28,6 +28,8 @@ contains
   subroutine c_user_obj_allocate() !TODO: define user objects in target language? How??
     use pf_my_level
     use pf_my_sweeper
+    
+    integer                   :: l                      !!  Level loop index
 
     do l = 1, pf_pfasst%nlevels
       !>  Allocate the user specific level object
