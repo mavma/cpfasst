@@ -5,7 +5,9 @@ CC = mpicc
 CFLAGS = -g -Og -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
 CLDFLAGS += -lgfortran -lquadmath 
-CLDFLAGS += $(shell mpif90 --showme:link)
+# CLDFLAGS += $(shell mpif90 --showme:link) # OpenMPI
+FLINK = $(shell mpif90 -link_info) # mpich
+CLDFLAGS += $(FLINK:gfortran=)
 
 FC = mpif90
 FFLAGS = -g -Og -ILibPFASST/include
