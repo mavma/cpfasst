@@ -1,22 +1,31 @@
 CSRC = 
 FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
 
-CC = mpicc
-CFLAGS = -g -Og -I.
+CC = mpiicc
+CFLAGS = -g -O0 -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
-CLDFLAGS += -lgfortran -lquadmath 
-# CLDFLAGS += $(shell mpif90 --showme:link) # OpenMPI
-FLINK = $(shell mpif90 -link_info) # mpich
-CLDFLAGS += $(FLINK:gfortran=)
+CLDFLAGS += -lgfortran -lquadmath
 
-FC = mpif90
+# OpenMPI
+# CLDFLAGS += $(shell mpif90 --showme:link)
+
+# mpich
+# CLDFLAGS += $(wordlist 2, 999, $(shell mpif90 -link_info))
+
+# Intel MPI
+CLDFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
+
+FC = mpiifort
 FFLAGS = -g -Og -ILibPFASST/include
-FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
+# FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
+
 # FLDFLAGS += -LLibPFASST/lib -lpfasst
 # FLDFLAGS += $(shell mpicc --showme:link)
 
 OBJ += $(CSRC:.c=.o)
 OBJ += $(FSRC:.f90=.o)
+
+print-%  : ; @echo $* = $($*)
 
 all: cmain fmain
 
