@@ -9,7 +9,7 @@ CLDFLAGS += -lgfortran -lquadmath
 FLINK = $(shell mpif90 -link_info) # mpich
 CLDFLAGS += $(FLINK:gfortran=)
 
-FC = mpif90
+FC = mpifort
 FFLAGS = -g -Og -ILibPFASST/include
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
 # FLDFLAGS += -LLibPFASST/lib -lpfasst
