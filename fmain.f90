@@ -17,29 +17,28 @@ program main
 contains
   !>  This subroutine setups and calls libpfasst 
   subroutine run_pfasst()  
-    use cadapt        !<  This module has include statements for the main pfasst routines
+    use cpfasst       !<  This module has include statements for the main pfasst routines
     use probin        !<  Local module reading/parsing problem parameters
 
     implicit none
 
     !>  Local variables
     !type(pf_ndarray_t):: y_0      !<  the initial condition
-    character(256)    :: my_pf_fname   !<  file name for input of PFASST parameters
 
     !> Read problem parameters
-    call probin_init(my_pf_fname)
+    call cpf_probin_init()
 
     !>  Set up communicator
-    call c_pf_mpi_create(MPI_COMM_WORLD)
+    call cpf_mpi_create(MPI_COMM_WORLD)
 
     !>  Create the pfasst structure
-    call c_pf_pfasst_create(fname=my_pf_fname)
+    call cpf_pfasst_create()
 
     !> Loop over levels and set some level specific parameters
-    call c_user_obj_allocate()
+    call cpf_user_obj_allocate()
 
     !>  Set up some pfasst stuff
-    call c_pf_pfasst_setup()
+    call cpf_pfasst_setup()
 
     ! !> add some hooks for output  (using a LibPFASST hook here)
     ! call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)

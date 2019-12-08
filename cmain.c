@@ -21,11 +21,11 @@
 // }
 
 // TODO: handle type conversion from fortran with typedefs for readability
-void __probin_MOD_probin_init(char*, uint32_t);
-void __cadapt_MOD_c_pf_mpi_create(int*);
-void __cadapt_MOD_c_pf_pfasst_create(int*, char*, bool*, uint32_t);
-void __cadapt_MOD_c_user_obj_allocate();
-void __cadapt_MOD_c_pf_pfasst_setup();
+void cpf_probin_init();
+void cpf_mpi_create(int*);
+void cpf_pfasst_create();
+void cpf_user_obj_allocate();
+void cpf_pfasst_setup();
 
 void run_pfasst();
 
@@ -48,24 +48,24 @@ void run_pfasst() {
 
     // !> Read problem parameters
     //printf("call probin_init(pf_fname)\n");
-    __probin_MOD_probin_init(pf_fname, 256L);
+    cpf_probin_init();
 
     // !>  Set up communicator
     printf("call pf_mpi_create(comm, MPI_COMM_WORLD)\n");
     MPI_Fint mpi_comm = MPI_Comm_c2f(MPI_COMM_WORLD); // https://www.mpi-forum.org/docs/mpi-2.2/mpi22-report/node361.htm
-    __cadapt_MOD_c_pf_mpi_create((int*) &mpi_comm);
+    cpf_mpi_create((int*) &mpi_comm);
 
     // !>  Create the pfasst structure
     printf("call pf_pfasst_create(pf, comm, fname=pf_fname)\n");
-    __cadapt_MOD_c_pf_pfasst_create(NULL, pf_fname, NULL, 256L);
+    cpf_pfasst_create();
 
     // !> Loop over levels and set some level specific parameters
     printf("do l = 1, pf%nlevels ...\n");
-    __cadapt_MOD_c_user_obj_allocate();
+    cpf_user_obj_allocate();
 
     // !>  Set up some pfasst stuff
     printf("call pf_pfasst_setup(pf)");
-    __cadapt_MOD_c_pf_pfasst_setup();
+    cpf_pfasst_setup();
 
     // !> add some hooks for output  (using a LibPFASST hook here)
     // call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
