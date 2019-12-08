@@ -41,28 +41,24 @@ contains
     call cpf_pfasst_setup()
 
     ! !> add some hooks for output  (using a LibPFASST hook here)
-    ! call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
+    call cpf_add_hook()
 
     ! !>  Output run parameters to screen
-    ! call print_loc_options(pf,un_opt=6)
+    call cpf_print_loc_options()
     
     ! !>  Allocate initial consdition
-    ! call ndarray_build(y_0, [ 1 ])
-
-    ! !> Set the initial condition 
-    ! call y_0%setval(1.0_pfdp)
-
+    ! !> Set the initial condition
+    call cpf_setup_ic() 
+    
     ! !> Do the PFASST time stepping
-    ! call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps)
+    call cpf_pfasst_run()
     
     ! !>  Wait for everyone to be done
-    ! call mpi_barrier(pf%comm%comm, ierror)
+    ! call mpi_barrier(pf%comm%comm, ierror) FIXME :(
 
     ! !>  Deallocate initial condition and final solution
-    ! call ndarray_destroy(y_0)
-    
     ! !>  Deallocate pfasst structure
-    ! call pf_pfasst_destroy(pf)
+    call cpf_cleanup()
 
   end subroutine run_pfasst
 

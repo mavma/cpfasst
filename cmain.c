@@ -10,30 +10,27 @@
 #include <stdbool.h>
 #include <mpi.h>
 
-// extern "C"
-// {
-//     //          ,-- 2 Leading underscores to start
-//     //          | ,-- then the module name
-//     //          | |     ,-- then _MOD_
-//     //          | |     |    ,-- then the subroutine name
-//     //          V V     V    V
-//     extern void __rocker_MOD_bye_baby();
-// }
-
-// TODO: handle type conversion from fortran with typedefs for readability
 void cpf_probin_init();
 void cpf_mpi_create(int*);
 void cpf_pfasst_create();
 void cpf_user_obj_allocate();
 void cpf_pfasst_setup();
+void cpf_add_hook();
+void cpf_print_loc_options();
+void cpf_setup_ic();
+void cpf_pfasst_run();
+void cpf_cleanup();
 
 void run_pfasst();
 
 int main(int argc, char** argv) {
 
-    printf("Starting C main\n");
-
     MPI_Init(&argc, &argv);
+
+    int nproc;
+    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+
+    printf("Starting C main with %d processors\n", nproc);
 
     run_pfasst();
 
@@ -47,7 +44,7 @@ void run_pfasst() {
     char pf_fname[256];
 
     // !> Read problem parameters
-    //printf("call probin_init(pf_fname)\n");
+    printf("call probin_init(pf_fname)\n");
     cpf_probin_init();
 
     // !>  Set up communicator
@@ -60,7 +57,7 @@ void run_pfasst() {
     cpf_pfasst_create();
 
     // !> Loop over levels and set some level specific parameters
-    printf("do l = 1, pf%nlevels ...\n");
+    printf("do l = 1, pf%%nlevels ...\n");
     cpf_user_obj_allocate();
 
     // !>  Set up some pfasst stuff
@@ -68,26 +65,27 @@ void run_pfasst() {
     cpf_pfasst_setup();
 
     // !> add some hooks for output  (using a LibPFASST hook here)
-    // call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
+    printf("call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)\n");
+    cpf_add_hook();
 
     // !>  Output run parameters to screen
-    // call print_loc_options(pf,un_opt=6)
+    printf("call print_loc_options(pf,un_opt=6)\n");
+    cpf_print_loc_options();
     
-    // !>  Allocate initial consdition
-    // call ndarray_build(y_0, [ 1 ])
-
+    // !>  Allocate initial condition
+    printf("call ndarray_build(y_0, [ 1 ])\n");
     // !> Set the initial condition 
-    // call y_0%setval(1.0_pfdp)
+    printf("call y_0%%setval(1.0_pfdp)\n");
+    cpf_setup_ic();
 
     // !> Do the PFASST time stepping
-    // call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps)
+    printf("call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps)\n");
+    cpf_pfasst_run();
     
     // !>  Wait for everyone to be done
     // call mpi_barrier(pf%comm%comm, ierror)
+    MPI_Barrier(MPI_COMM_WORLD);
 
     // !>  Deallocate initial condition and final solution
-    // call ndarray_destroy(y_0)
-    
-    // !>  Deallocate pfasst structure
-    // call pf_pfasst_destroy(pf)
+    cpf_cleanup();
 }
