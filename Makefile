@@ -13,14 +13,16 @@ CLDFLAGS += -lgfortran -lquadmath
 # CLDFLAGS += $(wordlist 2, 999, $(shell mpif90 -link_info))
 
 # Intel MPI
-CLDFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
+# CLDFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
 
 FC = mpiifort
 FFLAGS = -g -Og -ILibPFASST/include
 # FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
 
-# FLDFLAGS += -LLibPFASST/lib -lpfasst
-# FLDFLAGS += $(shell mpicc --showme:link)
+FLDFLAGS += -LLibPFASST/lib -lpfasst
+
+# Intel MPI
+FLDFLAGS += $(wordlist 2, 999, $(shell mpiicc -show))
 
 OBJ += $(CSRC:.c=.o)
 OBJ += $(FSRC:.f90=.o)
@@ -36,10 +38,10 @@ all: cmain fmain
 	$(FC) -c -w $< $(FFLAGS)
 
 cmain: cmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS)
+	$(FC) -o $@ $^ $(FLDFLAGS) -nofor_main
 
 fmain: fmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS)
+	$(FC) -o $@ $^ $(FLDFLAGS)
 
 $(OBJ): libpfasst
 
