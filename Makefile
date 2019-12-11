@@ -27,10 +27,12 @@ all: cmain fmain
 	$(FC) -c -w $< $(FFLAGS)
 
 cmain: cmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS)
+	$(CC) -o $@ $^ $(CLDFLAGS:f95=)
+	#$(CC) -o $@ $^ $(CLDFLAGS)
 
 fmain: fmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS)
+	$(CC) -o $@ $^ $(CLDFLAGS:f95=)
+	#$(CC) -o $@ $^ $(CLDFLAGS)
 
 $(OBJ): libpfasst
 

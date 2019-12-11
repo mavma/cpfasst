@@ -1,4 +1,4 @@
 [submodule "LibPFASST"]
 	path = LibPFASST
-	url = git@github.com:libpfasst/LibPFASST.git
+	url = http://github.com/libpfasst/LibPFASST.git
 	ignore = dirty

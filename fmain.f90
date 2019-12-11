@@ -25,19 +25,26 @@ contains
     !>  Local variables
     !type(pf_ndarray_t):: y_0      !<  the initial condition
 
+    write(*,*) "cpf_probin_init()"
     !> Read problem parameters
     call cpf_probin_init()
 
     !>  Set up communicator
+    write(*,*) "cpf_mpi_create()"
+    write(*,*) MPI_COMM_WORLD
+    write(*,*) SIZEOF(MPI_COMM_WORLD)
     call cpf_mpi_create(MPI_COMM_WORLD)
 
     !>  Create the pfasst structure
+    write(*,*) "cpf_pfasst_create()"
     call cpf_pfasst_create()
 
     !> Loop over levels and set some level specific parameters
+    write(*,*) "cpf_user_obj_allocate()"
     call cpf_user_obj_allocate()
 
     !>  Set up some pfasst stuff
+    write(*,*) "cpf_pfasst_setup()"
     call cpf_pfasst_setup()
 
     ! !> add some hooks for output  (using a LibPFASST hook here)
@@ -63,6 +70,8 @@ contains
     
     ! !>  Deallocate pfasst structure
     ! call pf_pfasst_destroy(pf)
+
+    write(*,*) "FINISHED"
 
   end subroutine run_pfasst
 

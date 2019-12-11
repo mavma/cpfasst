@@ -53,6 +53,9 @@ void run_pfasst() {
     // !>  Set up communicator
     printf("call pf_mpi_create(comm, MPI_COMM_WORLD)\n");
     MPI_Fint mpi_comm = MPI_Comm_c2f(MPI_COMM_WORLD); // https://www.mpi-forum.org/docs/mpi-2.2/mpi22-report/node361.htm
+    printf("%i\n", sizeof(mpi_comm));
+    printf("%i\n", sizeof(MPI_COMM_WORLD));
+    printf("%i %i\n", mpi_comm, MPI_COMM_WORLD);
     cpf_mpi_create((int*) &mpi_comm);
 
     // !>  Create the pfasst structure
