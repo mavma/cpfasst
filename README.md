@@ -1,13 +1,20 @@
 # cpfasst
 
-Build docker image
+Clone and initialize submodules
 ```
-docker build -t ubuntu-mpich docker
+git clone https://github.com/mavma/cpfasst.git
+git submodule update --init --recursive
 ```
 
-Run interactive shell on docker
+Build Docker images
 ```
-docker run --rm -it -v `pwd`:/project ubuntu-mpich
+docker build -t ubuntu-mpich docker/ubuntu-mpich
+docker build -t alpine-mpich docker/alpine-mpich
+```
+
+Run interactive shell on Docker container with the desired image
+```
+docker run --rm -it -v `pwd`:/project image-name
 ```
 
 Build project
