@@ -11,7 +11,7 @@
 #include <mpi.h>
 
 void cpf_probin_init();
-void cpf_mpi_create(int*);
+void cpf_mpi_create();
 void cpf_pfasst_create();
 void cpf_user_obj_allocate();
 void cpf_pfasst_setup();
@@ -49,8 +49,9 @@ void run_pfasst() {
 
     // !>  Set up communicator
     printf("call pf_mpi_create(comm, MPI_COMM_WORLD)\n");
-    MPI_Fint mpi_comm = MPI_Comm_c2f(MPI_COMM_WORLD); // https://www.mpi-forum.org/docs/mpi-2.2/mpi22-report/node361.htm
-    cpf_mpi_create((int*) &mpi_comm);
+    //MPI_Fint mpi_comm = MPI_Comm_c2f(MPI_COMM_WORLD); // https://www.mpi-forum.org/docs/mpi-2.2/mpi22-report/node361.htm
+    //cpf_mpi_create((int*) &mpi_comm)
+    cpf_mpi_create();
 
     // !>  Create the pfasst structure
     printf("call pf_pfasst_create(pf, comm, fname=pf_fname)\n");

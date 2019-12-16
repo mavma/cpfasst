@@ -1,5 +1,4 @@
 program main
-  use pf_mod_mpi
 
   integer ::  ierror
 
@@ -29,7 +28,7 @@ contains
     call cpf_probin_init()
 
     !>  Set up communicator
-    call cpf_mpi_create(MPI_COMM_WORLD)
+    call cpf_mpi_create()
 
     !>  Create the pfasst structure
     call cpf_pfasst_create()

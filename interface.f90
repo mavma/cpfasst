@@ -1,6 +1,7 @@
 !>  C adapter for LibPFASST/Tutorials/EX1_Dahlquist
 module cpfasst
   use pfasst
+  use pf_mod_mpi
   use pf_mod_ndarray
   use iso_c_binding
 
@@ -17,10 +18,10 @@ contains
   end subroutine cpf_probin_init
 
   !> Subroutine to create an MPI based PFASST communicator using the MPI communicator *mpi_comm*
-  subroutine cpf_mpi_create(mpi_comm) bind(C)
-    integer(c_int), intent(in) :: mpi_comm
+  subroutine cpf_mpi_create() bind(C)
+    ! integer(c_int), intent(in) :: mpi_comm
 
-    call pf_mpi_create(pf_comm, mpi_comm)
+    call pf_mpi_create(pf_comm, MPI_COMM_WORLD)
 
   end subroutine cpf_mpi_create
 
