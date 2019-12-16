@@ -1,11 +1,12 @@
 !>  C adapter for LibPFASST/Tutorials/EX1_Dahlquist
 module cpfasst
   use pfasst
+  use pf_mod_ndarray
   use iso_c_binding
 
   type(pf_pfasst_t) :: pf_pfasst  !<  the main pfasst structure
   type(pf_comm_t)   :: pf_comm    !<  the communicator (here it is mpi)
-  ! type(pf_ndarray_t):: y_0      !<  the initial condition
+  type(pf_ndarray_t):: y_0      !<  the initial condition
   character(256)    :: pf_fname   !<  file name for input of PFASST parameters
 
 contains
@@ -54,5 +55,31 @@ contains
   subroutine cpf_pfasst_setup() bind(C)
     call pf_pfasst_setup(pf_pfasst)
   end subroutine cpf_pfasst_setup
+
+  subroutine cpf_add_hook() bind(C)
+    call pf_add_hook(pf_pfasst, -1, PF_POST_ITERATION, pf_echo_residual)
+  end subroutine cpf_add_hook
+
+  subroutine cpf_print_loc_options() bind(C)
+    use probin
+    call print_loc_options(pf_pfasst,un_opt=6)
+  end subroutine cpf_print_loc_options
+
+  subroutine cpf_setup_ic() bind(C)
+    call ndarray_build(y_0, [ 1 ])
+    call y_0%setval(1.0_pfdp)
+  end subroutine cpf_setup_ic 
+
+  subroutine cpf_pfasst_run() bind(C)
+    use probin
+    call pf_pfasst_run(pf_pfasst, y_0, dt, 0.0_pfdp, nsteps)
+  end subroutine cpf_pfasst_run 
+
+  subroutine cpf_cleanup() bind(C)
+    call ndarray_destroy(y_0)
+    call pf_pfasst_destroy(pf_pfasst)
+  end subroutine cpf_cleanup 
+
+  
 
 end module cpfasst

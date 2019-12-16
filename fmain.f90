@@ -25,53 +25,40 @@ contains
     !>  Local variables
     !type(pf_ndarray_t):: y_0      !<  the initial condition
 
-    write(*,*) "cpf_probin_init()"
     !> Read problem parameters
     call cpf_probin_init()
 
     !>  Set up communicator
-    write(*,*) "cpf_mpi_create()"
-    write(*,*) MPI_COMM_WORLD
-    write(*,*) SIZEOF(MPI_COMM_WORLD)
     call cpf_mpi_create(MPI_COMM_WORLD)
 
     !>  Create the pfasst structure
-    write(*,*) "cpf_pfasst_create()"
     call cpf_pfasst_create()
 
     !> Loop over levels and set some level specific parameters
-    write(*,*) "cpf_user_obj_allocate()"
     call cpf_user_obj_allocate()
 
     !>  Set up some pfasst stuff
-    write(*,*) "cpf_pfasst_setup()"
     call cpf_pfasst_setup()
 
     ! !> add some hooks for output  (using a LibPFASST hook here)
-    ! call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
+    call cpf_add_hook()
 
     ! !>  Output run parameters to screen
-    ! call print_loc_options(pf,un_opt=6)
+    call cpf_print_loc_options()
     
     ! !>  Allocate initial consdition
-    ! call ndarray_build(y_0, [ 1 ])
-
-    ! !> Set the initial condition 
-    ! call y_0%setval(1.0_pfdp)
-
+    ! !> Set the initial condition
+    call cpf_setup_ic() 
+    
     ! !> Do the PFASST time stepping
-    ! call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps)
+    call cpf_pfasst_run()
     
     ! !>  Wait for everyone to be done
-    ! call mpi_barrier(pf%comm%comm, ierror)
+    ! call mpi_barrier(pf%comm%comm, ierror) FIXME :(
 
     ! !>  Deallocate initial condition and final solution
-    ! call ndarray_destroy(y_0)
-    
     ! !>  Deallocate pfasst structure
-    ! call pf_pfasst_destroy(pf)
-
-    write(*,*) "FINISHED"
+    call cpf_cleanup()
 
   end subroutine run_pfasst
 
