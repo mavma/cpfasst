@@ -1,22 +1,28 @@
-CSRC = 
+SRC =
 FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
 
 CC = mpicc
-CFLAGS = -g -Og -I.
+CFLAGS = -g -O0 -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
-CLDFLAGS += -lgfortran -lquadmath 
-# CLDFLAGS += $(shell mpif90 --showme:link) # OpenMPI
-FLINK = $(shell mpif90 -link_info) # mpich
-CLDFLAGS += $(FLINK:gfortran=)
+CLDFLAGS += -lgfortran -lquadmath
+
+# OpenMPI
+# FMPIFLAGS += $(shell mpif90 --showme:link)
+# mpich
+FMPIFLAGS += $(wordlist 2, 999, $(shell mpif90 -link_info))
+# Intel MPI
+# FMPIFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
+# CLDFLAGS += -nofor_main
 
 FC = mpifort
 FFLAGS = -g -Og -ILibPFASST/include
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
-# FLDFLAGS += -LLibPFASST/lib -lpfasst
-# FLDFLAGS += $(shell mpicc --showme:link)
+FLDFLAGS += -LLibPFASST/lib -lpfasst
 
 OBJ += $(CSRC:.c=.o)
 OBJ += $(FSRC:.f90=.o)
+
+print-%  : ; @echo $* = $($*)
 
 all: cmain fmain
 
@@ -27,12 +33,10 @@ all: cmain fmain
 	$(FC) -c -w $< $(FFLAGS)
 
 cmain: cmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS:f95=)
-	#$(CC) -o $@ $^ $(CLDFLAGS)
+	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
 
 fmain: fmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS:f95=)
-	#$(CC) -o $@ $^ $(CLDFLAGS)
+	$(FC) -o $@ $^ $(FLDFLAGS)
 
 $(OBJ): libpfasst
 
