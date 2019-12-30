@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="fmain" type="CLionExternalRunConfiguration" factoryName="Application" WORKING_DIR="file://.." PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpfasst" TARGET_NAME="Make" CONFIG_NAME="Make" RUN_PATH="$PROJECT_DIR$/build/fmain">
+    <method v="2">
+      <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+    </method>
+  </configuration>
+</component>

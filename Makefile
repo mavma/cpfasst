@@ -1,5 +1,7 @@
 SRC =
 FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
+BUILDDIR = build
+SRCDIR = .
 
 CC = mpicc
 CFLAGS = -g -O0 -I.
@@ -19,23 +21,24 @@ FFLAGS = -g -Og -ILibPFASST/include
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
 FLDFLAGS += -LLibPFASST/lib -lpfasst
 
-OBJ += $(CSRC:.c=.o)
-OBJ += $(FSRC:.f90=.o)
+OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
 print-%  : ; @echo $* = $($*)
 
-all: cmain fmain
+all: $(BUILDDIR)/cmain $(BUILDDIR)/fmain
 
-%.o: %.c
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	@mkdir -p $(BUILDDIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-%.o: %.f90
-	$(FC) -c -w $< $(FFLAGS)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.f90
+	@mkdir -p $(BUILDDIR)
+	$(FC) -c -o $@ -J$(BUILDDIR) $< $(FFLAGS)
 
-cmain: cmain.o $(OBJ)
+$(BUILDDIR)/cmain: $(BUILDDIR)/cmain.o $(OBJ)
 	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
 
-fmain: fmain.o $(OBJ)
+$(BUILDDIR)/fmain: $(BUILDDIR)/fmain.o $(OBJ)
 	$(FC) -o $@ $^ $(FLDFLAGS)
 
 $(OBJ): libpfasst
@@ -44,5 +47,5 @@ libpfasst:
 	cd LibPFASST; $(MAKE) DEBUG=TRUE
 
 clean:
-	\rm -f *.o *.mod cmain fmain
+	\rm -rf build
 	cd LibPFASST; $(MAKE) clean
