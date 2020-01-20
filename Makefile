@@ -1,10 +1,10 @@
 SRC =
-FSRC = probin.f90 level.f90 sweeper.f90 interface.f90
+FSRC = probin.f90 level.f90 sweeper.f90 cpf_imex_sweeper.f90 interface.f90
 BUILDDIR = build
 SRCDIR = .
 
 CC = mpicc
-CFLAGS = -g -O0 -I.
+CFLAGS = -g -Og -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
 CLDFLAGS += -lgfortran -lquadmath
 

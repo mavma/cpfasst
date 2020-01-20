@@ -6,9 +6,11 @@
 //https://gcc.gnu.org/onlinedocs/gcc-4.9.4/gfortran/Working-with-Pointers.html
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <mpi.h>
+#include <assert.h>
 
 void cpf_probin_init();
 void cpf_mpi_create();
@@ -20,6 +22,31 @@ void cpf_print_loc_options();
 void cpf_setup_ic();
 void cpf_pfasst_run();
 void cpf_cleanup();
+void cpf_imex_sweeper_set_feval(void*);
+
+// FIXME from probin
+double lam1 =  1.0;
+double lam2 = -2.0;
+
+void feval (double* y, int ydim, double t, int level_index, double* f, int fdim, int piece) {
+
+    assert(fdim == ydim);
+    y[0] = 42;
+    f[0] = 1138;
+    /*switch(piece) {
+        case 1: // ! Explicit piece
+            for(int i=0; i<fdim; i++) f[i] = lam1*y[i];
+            break;
+        case 2: // ! Implicit piece
+            for(int i=0; i<fdim; i++) f[i] = lam2*y[i];
+            break;
+        default:
+            printf("Bad case for piece in f_eval %d", piece);
+            exit(0);
+            break;
+    }*/
+    return;
+}
 
 void run_pfasst();
 
@@ -78,6 +105,9 @@ void run_pfasst() {
     // !> Set the initial condition 
     printf("call y_0%%setval(1.0_pfdp)\n");
     cpf_setup_ic();
+
+    // set sweeper functions
+    cpf_imex_sweeper_set_feval(&feval);
 
     // !> Do the PFASST time stepping
     printf("call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps)\n");

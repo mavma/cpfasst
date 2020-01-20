@@ -37,7 +37,7 @@ contains
 
   subroutine cpf_user_obj_allocate() bind(C) !TODO: define user objects in target language? How??
     use pf_my_level
-    use pf_my_sweeper
+    use cpf_imex_sweeper
     
     integer :: l !!  Level loop index
 
@@ -47,7 +47,7 @@ contains
       !>  Allocate the user specific data constructor
       allocate(pf_ndarray_factory_t::pf_pfasst%levels(l)%ulevel%factory)
       !>  Allocate the sweeper at this level
-      allocate(my_sweeper_t::pf_pfasst%levels(l)%ulevel%sweeper)
+      allocate(cpf_imex_sweeper_t::pf_pfasst%levels(l)%ulevel%sweeper)
       !>  Set the size of the data on this level (here just one) // TODO: take as user input
       call pf_level_set_size(pf_pfasst,l,[1])
     end do
