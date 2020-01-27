@@ -19,5 +19,5 @@ jobs:
           sudo apt-get -y install mpich
       - name: Compile and run 
         run: |
-          make all
+          make MPICH_BIN=/usr/bin
           mpiexec build/cmain

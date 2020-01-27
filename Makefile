@@ -26,8 +26,6 @@ FLDFLAGS += -LLibPFASST/lib -lpfasst
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
-print-%  : ; @echo $* = $($*)
-
 all: $(BUILDDIR)/cmain $(BUILDDIR)/fmain
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
