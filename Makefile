@@ -6,7 +6,7 @@ BUILDDIR = build
 SRCDIR = .
 
 CC = $(MPICH_BIN)/mpicc
-CFLAGS = -g -Og -I.
+CFLAGS = -g -O0 -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
 CLDFLAGS += -lgfortran -lquadmath
 
@@ -20,7 +20,7 @@ FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
 # FMPIFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
 # CLDFLAGS += -nofor_main
 
-FFLAGS = -g -Og -ILibPFASST/include
+FFLAGS = -g -O0 -ILibPFASST/include
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
 FLDFLAGS += -LLibPFASST/lib -lpfasst
 
@@ -47,7 +47,7 @@ $(BUILDDIR)/fmain: $(BUILDDIR)/fmain.o $(OBJ)
 $(OBJ): libpfasst
 
 libpfasst:
-	cd LibPFASST; $(MAKE) DEBUG=TRUE
+	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
 clean:
 	\rm -rf build

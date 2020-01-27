@@ -28,23 +28,41 @@ void cpf_imex_sweeper_set_feval(void*);
 double lam1 =  1.0;
 double lam2 = -2.0;
 
-void feval (double* y, int ydim, double t, int level_index, double* f, int fdim, int piece) {
+void feval (double** y, int* ydim, double* t, int* level_index, double** f, int* fdim, int* piece) {
 
-    assert(fdim == ydim);
-    y[0] = 42;
-    f[0] = 1138;
-    /*switch(piece) {
+    assert(*fdim == *ydim);
+    switch(*piece) {
         case 1: // ! Explicit piece
-            for(int i=0; i<fdim; i++) f[i] = lam1*y[i];
+            for(int i=0; i<*fdim; i++) (*f)[i] = lam1*(*y)[i];
             break;
         case 2: // ! Implicit piece
-            for(int i=0; i<fdim; i++) f[i] = lam2*y[i];
+            for(int i=0; i<*fdim; i++) (*f)[i] = lam2*(*y)[i];
             break;
         default:
-            printf("Bad case for piece in f_eval %d", piece);
+            printf("Bad case for piece in f_eval %d", *piece);
             exit(0);
             break;
-    }*/
+    }
+    return;
+}
+
+void fcomp(double** y, int* ydim, double* t, double* dtq, double** rhs, int* rhsdim, int* level_index, double** f, int* fdim, int* piece) {
+    assert(*fdim == *ydim);
+    assert(*fdim == *rhsdim);
+    switch(*piece) {
+        case 2:
+            for(int i=0; i<*fdim; i++) {
+                // yvec =  rhsvec/(1.0_pfdp - dtq*lam2)
+                (*y)[i] = (*rhs)[i]/(1.0 - (*dtq)*lam2);
+                // fvec = (yvec - rhsvec) / dtq
+                (*f)[i] = ((*y)[i] - (*rhs)[i])/(*dtq);
+            }
+            break;
+        default:
+            printf("Bad case for piece in f_comp %d", *piece);
+            exit(0);
+            break;
+    }
     return;
 }
 
@@ -108,6 +126,7 @@ void run_pfasst() {
 
     // set sweeper functions
     cpf_imex_sweeper_set_feval(&feval);
+    cpf_imex_sweeper_set_fcomp(&fcomp);
 
     // !> Do the PFASST time stepping
     printf("call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps)\n");

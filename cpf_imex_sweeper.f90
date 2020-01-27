@@ -12,18 +12,31 @@ module cpf_imex_sweeper
   interface
     subroutine c_f_eval_interface(y, ydim, t, level_index, f, fdim, piece)
       import :: c_double, c_int, c_ptr
-      type(c_ptr), value    :: y
-      integer(c_int), value :: ydim
-      real(c_double), value :: t
-      integer(c_int), value :: level_index
-      type(c_ptr), value    :: f
-      integer(c_int), value :: fdim
-      integer(c_int), value :: piece
+      type(c_ptr)     :: y
+      integer(c_int)  :: ydim
+      real(c_double)  :: t
+      integer(c_int)  :: level_index
+      type(c_ptr)     :: f
+      integer(c_int)  :: fdim
+      integer(c_int)  :: piece
+    end subroutine
+    subroutine c_f_comp_interface(y, ydim, t, dtq, rhs, rhsdim, level_index, f, fdim, piece)
+      import :: c_double, c_int, c_ptr
+      type(c_ptr)     :: y
+      integer(c_int)  :: ydim
+      real(c_double)  :: t
+      real(c_double)  :: dtq
+      type(c_ptr)     :: rhs
+      integer(c_int)  :: rhsdim
+      integer(c_int)  :: level_index
+      type(c_ptr)     :: f
+      integer(c_int)  :: fdim
+      integer(c_int)  :: piece
     end subroutine
   end interface
 
   procedure(c_f_eval_interface), pointer :: c_f_eval
-  procedure(c_f_eval_interface), pointer :: c_f_comp !FIXME
+  procedure(c_f_comp_interface), pointer :: c_f_comp
 
   !>  extend the imex sweeper type with stuff we need to compute rhs
   type, extends(pf_imex_sweeper_t) :: cpf_imex_sweeper_t
@@ -85,6 +98,7 @@ contains
   !> Solve for y and return f2 also.
   subroutine f_comp(this, y, t, dtq, rhs, level_index, f,piece)
     use probin, only:  lam1, lam2
+    use iso_c_binding, only: c_ptr
     class(cpf_imex_sweeper_t), intent(inout) :: this
     class(pf_encap_t),   intent(inout) :: y
     real(pfdp),          intent(in   ) :: t
@@ -95,22 +109,14 @@ contains
     integer,             intent(in   ) :: piece
 
     real(pfdp),      pointer :: yvec(:), rhsvec(:), fvec(:)
-    
-    if (piece == 2) then
-       !> Grab the arrays from the encapsulation       
-       yvec  => get_array1d(y)
-       rhsvec => get_array1d(rhs)
-       fvec => get_array1d(f)
 
-       !  Do the solve
-       yvec =  rhsvec/(1.0_pfdp - dtq*lam2)
+    !> Grab the arrays from the encapsulation
+    yvec => get_array1d(y)
+    fvec => get_array1d(f)
+    rhsvec => get_array1d(rhs)
 
-       !  The function is easy to derive  (equivalent to lam2*yvec)
-       fvec = (yvec - rhsvec) / dtq
-    else
-       print *,'Bad piece in f_comp ',piece
-       call exit(0)
-    end if
+    call c_f_comp(c_loc(yvec), size(yvec), t, dtq, c_loc(rhsvec), size(rhsvec), level_index, c_loc(fvec), size(fvec), piece)
+
   end subroutine f_comp
 
 end module cpf_imex_sweeper
