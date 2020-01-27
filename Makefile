@@ -1,7 +1,7 @@
 MPICH_BIN = /opt/mpich/bin
 
 SRC =
-FSRC = probin.f90 level.f90 sweeper.f90 cpf_imex_sweeper.f90 interface.f90
+FSRC = probin.f90 level.f90 cpf_imex_sweeper.f90 interface.f90
 BUILDDIR = build
 SRCDIR = .
 
@@ -26,7 +26,7 @@ FLDFLAGS += -LLibPFASST/lib -lpfasst
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
-all: $(BUILDDIR)/cmain $(BUILDDIR)/fmain
+all: $(BUILDDIR)/cmain
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(BUILDDIR)
@@ -38,9 +38,6 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.f90
 
 $(BUILDDIR)/cmain: $(BUILDDIR)/cmain.o $(OBJ)
 	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
-
-$(BUILDDIR)/fmain: $(BUILDDIR)/fmain.o $(OBJ)
-	$(FC) -o $@ $^ $(FLDFLAGS)
 
 $(OBJ): libpfasst
 
