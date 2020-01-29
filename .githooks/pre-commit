@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "Pre-commit: saving compiler versions"
+TL=$(git rev-parse --show-toplevel)
+{ mpifort -v ;\
+  mpifort --version ;\
+  mpicc -v ;\
+  mpicc --version ;} &> $TL/versions
+git add $TL/versions
+exit
