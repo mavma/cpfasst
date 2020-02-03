@@ -1,9 +1,9 @@
 MPICH_BIN = /opt/mpich/bin
 
-SRC =
+CSRC = sweeper.c
 FSRC = probin.f90 level.f90 cpf_imex_sweeper.f90 interface.f90
 BUILDDIR = build
-SRCDIR = .
+SRCDIR = src
 
 CC = $(MPICH_BIN)/mpicc
 CFLAGS = -g -O0 -I.
@@ -11,6 +11,9 @@ CLDFLAGS += -LLibPFASST/lib -lpfasst
 CLDFLAGS += -lgfortran -lquadmath
 
 FC = $(MPICH_BIN)/mpif90
+FFLAGS = -g -O0 -ILibPFASST/include
+FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
+FLDFLAGS += -LLibPFASST/lib -lpfasst
 
 # OpenMPI
 # FMPIFLAGS += $(shell mpif90 --showme:link)
@@ -19,10 +22,6 @@ FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
 # Intel MPI
 # FMPIFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
 # CLDFLAGS += -nofor_main
-
-FFLAGS = -g -O0 -ILibPFASST/include
-FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
-FLDFLAGS += -LLibPFASST/lib -lpfasst
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
