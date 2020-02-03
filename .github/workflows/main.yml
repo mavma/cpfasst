@@ -1,4 +1,4 @@
-name: CI
+name: test
 
 on: [push]
 
@@ -20,4 +20,7 @@ jobs:
       - name: Compile and run 
         run: |
           make MPICH_BIN=/usr/bin
-          mpiexec build/cmain
+          mpiexec ./cmain probin.nml
+          mpiexec ./cmain sdc.nml
+          mpiexec ./cmain multi_level.nml
+          mpiexec ./cmain pipeline.nml
