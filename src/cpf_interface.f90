@@ -5,13 +5,13 @@ module cpfasst
   use pf_my_level       !< Local module for level
   use hooks             !< Local module for diagnostics and i/o
   use probin            !< Local module reading/parsing problem parameters
-  use encap             !< Local module defining the encapsulation
+  use cpf_encap
   use pf_mod_mpi
 
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
   type(pf_comm_t)   :: comm    !<  the communicator (here it is mpi)
-  type(scalar_encap)   :: y_0      !<  the initial condition
-  type(scalar_encap)   :: y_end      !<  the initial condition
+  type(cpf_encap_t)   :: y_0      !<  the initial condition
+  type(cpf_encap_t)   :: y_end      !<  the initial condition
   character(256)    :: pf_fname   !<  file name for input of PFASST parameters
 
 contains
@@ -43,7 +43,7 @@ contains
       !>  Allocate the user specific level object
       allocate(my_level_t::pf%levels(l)%ulevel)
       !>  Allocate the user specific data constructor
-      allocate(scalar_factory::pf%levels(l)%ulevel%factory)
+      allocate(cpf_factory::pf%levels(l)%ulevel%factory)
       !>  Add the sweeper to the level
       allocate(my_sweeper_t::pf%levels(l)%ulevel%sweeper)
       !>  Set the size of the data on this level (here just one)

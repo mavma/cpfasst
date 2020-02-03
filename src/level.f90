@@ -4,7 +4,7 @@
 !> Level specification for Dahlquist example.
 !>     u_t = lam1*u + lam2*u
 module pf_my_level
-  use encap
+  use cpf_encap
   use pf_mod_imex_sweeper
 
   !>  extend the generic level type by defining transfer operators
@@ -27,7 +27,7 @@ contains
     class(pf_encap_t), intent(inout) :: f_vec, c_vec  !  fine and coarse vectors
     integer, intent(in), optional :: flags
 
-    class(scalar_encap), pointer :: y_f, y_c
+    class(cpf_encap_t), pointer :: y_f, y_c
 
     !>  Cast the abstract encap as my data type
     y_f => cast_as_scalar(f_vec)
@@ -45,7 +45,7 @@ contains
     real(pfdp),        intent(in   )   :: t             !<  time of solution
     integer, intent(in), optional :: flags
 
-    class(scalar_encap), pointer :: y_f, y_c
+    class(cpf_encap_t), pointer :: y_f, y_c
 
     !>  Cast the abstract encap as my data type
     y_f => cast_as_scalar(f_vec)

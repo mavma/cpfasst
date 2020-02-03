@@ -3,7 +3,7 @@
 !
 !>  User defined routines that can be called from inside libpfasst using hooks
 module hooks
-  use encap
+  use cpf_encap
   use pf_my_sweeper
   implicit none
 contains
@@ -17,7 +17,7 @@ contains
     real(pfdp) :: yexact
     real(pfdp) :: maxerr
     real(pfdp) :: residual
-    class(scalar_encap), pointer :: y_end
+    class(cpf_encap_t), pointer :: y_end
 
     !> Get the solution at the end of this step
     y_end => cast_as_scalar(pf%levels(level_index)%qend)

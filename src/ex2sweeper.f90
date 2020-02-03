@@ -4,7 +4,7 @@
 !> Sweeper and RHS specification for Dahlquist example.
 !>     u_t = lam1*u + lam2*u
 module pf_my_sweeper
-  use encap
+  use cpf_encap
   use pf_mod_imex_sweeper
 
   !>  extend the imex sweeper type with stuff we need to compute rhs
@@ -64,7 +64,7 @@ contains
     integer,             intent(in   ) :: level_index
     integer,             intent(in   ) :: piece
     
-    class(scalar_encap), pointer :: y_encap, f_encap
+    class(cpf_encap_t), pointer :: y_encap, f_encap
     
     y_encap => cast_as_scalar(y)
     f_encap => cast_as_scalar(f)
@@ -94,7 +94,7 @@ contains
     class(pf_encap_t),   intent(inout) :: f
     integer,             intent(in   ) :: piece
 
-    class(scalar_encap), pointer :: y_encap, f_encap, rhs_encap
+    class(cpf_encap_t), pointer :: y_encap, f_encap, rhs_encap
 
     y_encap => cast_as_scalar(y)
     f_encap => cast_as_scalar(f)
@@ -120,7 +120,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !> Routine to set initial condition.
   subroutine initial(y_0)
-    type(scalar_encap), intent(inout) :: y_0
+    type(cpf_encap_t), intent(inout) :: y_0
     call exact(0.0_pfdp, y_0%y)
   end subroutine initial
 
