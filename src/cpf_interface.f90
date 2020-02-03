@@ -12,6 +12,12 @@ module cpfasst
 
 contains
 
+  subroutine set_fname(fname) bind(C)
+    use iso_c_binding, only: c_char, c_int
+    character(c_char) :: fname(256)
+    pf_fname = transfer(fname, pf_fname)
+  end subroutine set_fname
+
   subroutine cpf_probin_init() bind(C)
     use probin
     call probin_init(pf_fname)

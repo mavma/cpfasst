@@ -12,5 +12,7 @@ void cpf_setup_ic();
 void cpf_pfasst_run();
 void cpf_cleanup();
 
+void set_fname(char*);
+
 void cpf_imex_sweeper_set_feval(void*);
 void cpf_imex_sweeper_set_fcomp(void*);
