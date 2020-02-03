@@ -30,9 +30,9 @@ contains
     integer :: un  !  file read unit
 
     !> Set the name of the input file
-    probin_fname = "probin.nml" ! default file name - can be overwritten on the command line
-    if (command_argument_count() >= 1) &
-         call get_command_argument(1, value=probin_fname)
+    probin_fname = pf_fname
+    !if (command_argument_count() >= 1) &
+    !     call get_command_argument(1, value=probin_fname)
 
     !> set defaults
     nsteps  = -1
@@ -46,7 +46,7 @@ contains
     
     !>  Read in stuff from input file
     un = 9
-    write(*,*) 'opening file ',TRIM(probin_fname), '  for input'
+    !write(*,*) 'opening file ',TRIM(probin_fname), '  for input'
     open(unit=un, file = probin_fname, status = 'old', action = 'read')
     read(unit=un, nml = params)
     close(unit=un)
@@ -95,7 +95,7 @@ contains
     write(un,*) 'lam2:   ', lam2, '! implicit constant'    
 
 
-    write(un,*) 'PFASST parameters read from input file ', pfasst_nml
+    !write(un,*) 'PFASST parameters read from input file ', pfasst_nml
     write(un,*) '=================================================='
   end subroutine print_loc_options
   
