@@ -1,14 +1,14 @@
 MPICH_BIN = /opt/mpich/bin
 
 CSRC = sweeper.c
-FSRC = probin.f90 level.f90 cpf_imex_sweeper.f90 cpf_interface.f90
+FSRC = probin.f90 encap.f90 level.f90 ex2sweeper.f90 hooks.f90 cpf_imex_sweeper.f90 cpf_interface.f90
 BUILDDIR = build
 SRCDIR = src
 
 CC = $(MPICH_BIN)/mpicc
 CFLAGS = -g -O0 -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
-CLDFLAGS += -lgfortran -lquadmath
+CLDFLAGS += -lgfortran -lquadmath -lm -ldl
 
 FC = $(MPICH_BIN)/mpif90
 FFLAGS = -g -O0 -ILibPFASST/include

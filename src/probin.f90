@@ -20,7 +20,7 @@ contains
   subroutine probin_init(pf_fname)
     character(len=*), intent(inout) :: pf_fname
 
-    !  Local variable for reading
+    !  Some local variables for reading
     character(len=128) :: arg  !  command line argument
     character(len=128)    :: probin_fname   !<  file name for input parameters
     character(len=256) :: istring           ! stores command line argument
@@ -30,9 +30,9 @@ contains
     integer :: un  !  file read unit
 
     !> Set the name of the input file
-    probin_fname = pf_fname
-    !if (command_argument_count() >= 1) &
-    !     call get_command_argument(1, value=probin_fname)
+    probin_fname = "probin.nml" ! default file name - can be overwritten on the command line
+    if (command_argument_count() >= 1) &
+         call get_command_argument(1, value=probin_fname)
 
     !> set defaults
     nsteps  = -1
@@ -91,8 +91,8 @@ contains
     write(un,*) 'nsteps: ', nsteps, '! Number of steps'
     write(un,*) 'Dt:     ', Dt, '! Time step size'
     write(un,*) 'Tfin:   ', Tfin,   '! Final time of run'
-    write(un,*) 'lam2:   ', lam1, '! explicit constant'
-    write(un,*) 'lam1:   ', lam2, '! implicit constant'    
+    write(un,*) 'lam1:   ', lam1, '! explicit constant'
+    write(un,*) 'lam2:   ', lam2, '! implicit constant'    
 
 
     write(un,*) 'PFASST parameters read from input file ', pfasst_nml
