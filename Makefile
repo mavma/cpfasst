@@ -25,7 +25,8 @@ FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
-all: cmain
+cmain: $(BUILDDIR)/cmain.o $(OBJ)
+	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(BUILDDIR)
@@ -35,14 +36,21 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.f90
 	@mkdir -p $(BUILDDIR)
 	$(FC) -c -o $@ -J$(BUILDDIR) $< $(FFLAGS)
 
-cmain: $(BUILDDIR)/cmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
-
 $(OBJ): libpfasst
 
 libpfasst:
 	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
+examples: libpfasst
+	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+
+all: cmain examples
+
 clean:
 	\rm -rf build
 	cd LibPFASST; $(MAKE) clean
+	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean;
+	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean;
+	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) clean;
