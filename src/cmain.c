@@ -4,7 +4,7 @@
 #include <mpi.h>
 
 #include "cpf_interface.h"
-#include "sweeper.h"
+#include "cpf_sweeper.h"
 
 char fname[256] = "probin.nml";
 

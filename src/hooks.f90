@@ -4,13 +4,13 @@
 !>  User defined routines that can be called from inside libpfasst using hooks
 module hooks
   use cpf_encap
-  use pf_my_sweeper
+  use cpf_imex_sweeper
   implicit none
 contains
 
   !>  Output the error and residual in the solution
   subroutine echo_error(pf, level_index)
-    use pf_my_sweeper, only: exact
+    use cpf_imex_sweeper, only: exact
     type(pf_pfasst_t), intent(inout) :: pf
     integer, intent(in) :: level_index
 
@@ -20,12 +20,12 @@ contains
     class(cpf_encap_t), pointer :: y_end
 
     !> Get the solution at the end of this step
-    y_end => cast_as_scalar(pf%levels(level_index)%qend)
+    y_end => cast_as_cpf(pf%levels(level_index)%qend)
 
     !>  compute the exact solution
     call exact(pf%state%t0+pf%state%dt, yexact)
     !>  compute error
-    maxerr = abs(y_end%y-yexact)
+    ! maxerr = abs(y_end%y-yexact)
     residual=pf%levels(level_index)%residual
     
     print '("error: step: ",i3.3," iter: ",i4.3," level: ",i2.2," error: ",es14.7," res: ",es18.10e4)', &

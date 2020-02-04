@@ -30,11 +30,12 @@ contains
     class(cpf_encap_t), pointer :: y_f, y_c
 
     !>  Cast the abstract encap as my data type
-    y_f => cast_as_scalar(f_vec)
-    y_c => cast_as_scalar(c_vec)
+    y_f => cast_as_cpf(f_vec)
+    y_c => cast_as_cpf(c_vec)
 
-    !> Here we use the identity map    
-    y_f%y=y_c%y
+    !> Here we use the identity map
+    ! y_f%y=y_c%y
+    call y_f%copy(y_c)
   end subroutine interpolate
 
   !>  Restrict from fine level to coarse
@@ -52,7 +53,8 @@ contains
     y_c => cast_as_scalar(c_vec)
 
     !> Here we use the identity map    
-    y_c%y = y_f%y
+    !y_c%y = y_f%y
+    call y_c%copy(y_f)
   end subroutine restrict
 
 end module pf_my_level

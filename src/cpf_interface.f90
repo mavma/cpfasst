@@ -1,11 +1,11 @@
 !>  C adapter for LibPFASST/Tutorials/EX1_Dahlquist
 module cpfasst
   use pfasst            !< This module has include statements for the main pfasst routines
-  use pf_my_sweeper     !< Local module for sweeper
   use pf_my_level       !< Local module for level
   use hooks             !< Local module for diagnostics and i/o
   use probin            !< Local module reading/parsing problem parameters
   use cpf_encap
+  use cpf_imex_sweeper
   use pf_mod_mpi
 
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
@@ -45,7 +45,7 @@ contains
       !>  Allocate the user specific data constructor
       allocate(cpf_factory::pf%levels(l)%ulevel%factory)
       !>  Add the sweeper to the level
-      allocate(my_sweeper_t::pf%levels(l)%ulevel%sweeper)
+      allocate(cpf_imex_sweeper_t::pf%levels(l)%ulevel%sweeper)
       !>  Set the size of the data on this level (here just one)
       call pf_level_set_size(pf,l,[1])
     end do
@@ -56,7 +56,8 @@ contains
   end subroutine cpf_pfasst_setup
 
   subroutine cpf_add_hook() bind(C)
-    call pf_add_hook(pf, -1, PF_POST_ITERATION, echo_error)
+    call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
+    ! call pf_add_hook(pf, -1, PF_POST_ITERATION, echo_error)
   end subroutine cpf_add_hook
 
   subroutine cpf_print_loc_options() bind(C)
@@ -64,6 +65,8 @@ contains
   end subroutine cpf_print_loc_options
 
   subroutine cpf_setup_ic() bind(C)
+    call cpf_encap_build(y_0, 0, [ 0 ]) !FIXME: what to pass for extra args here?
+    call cpf_encap_build(y_end, 0, [ 0 ]) !FIXME: what to pass for extra args here?
     call y_0%setval(1.0_pfdp)
   end subroutine cpf_setup_ic
 
@@ -72,6 +75,8 @@ contains
   end subroutine cpf_pfasst_run 
 
   subroutine cpf_cleanup() bind(C)
+    call cpf_encap_destroy(y_0)
+    call cpf_encap_destroy(y_end)
     call pf_pfasst_destroy(pf)
   end subroutine cpf_cleanup
 

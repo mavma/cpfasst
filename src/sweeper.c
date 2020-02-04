@@ -1,21 +1,24 @@
-#include "sweeper.h"
+#include "cpf_sweeper.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
+#include "data.h"
+
 // FIXME: from probin
 const double lam1 =  1.0;
 const double lam2 = -2.0;
 
-void feval (double** y, int* ydim, double* t, int* level_index, double** f, int* fdim, int* piece) {
-    assert(*fdim == *ydim);
+void sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
+    custom_data_t *cy = (custom_data_t*) (*y);
+    custom_data_t *cf = (custom_data_t*) (*f);
     switch(*piece) {
         case 1: // ! Explicit piece
-            for(int i=0; i<*fdim; i++) (*f)[i] = lam1*(*y)[i];
+            cf->y = lam1*cy->y;
             break;
         case 2: // ! Implicit piece
-            for(int i=0; i<*fdim; i++) (*f)[i] = lam2*(*y)[i];
+            cf->y = lam2*cy->y;
             break;
         default:
             printf("Bad case for piece in f_eval %d", *piece);
@@ -25,15 +28,14 @@ void feval (double** y, int* ydim, double* t, int* level_index, double** f, int*
     return;
 }
 
-void fcomp (double** y, int* ydim, double* t, double* dtq, double** rhs, int* rhsdim, int* level_index, double** f, int* fdim, int* piece) {
-    assert(*fdim == *ydim);
-    assert(*fdim == *rhsdim);
+void sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
+    custom_data_t *cy = (custom_data_t*) (*y);
+    custom_data_t *cf = (custom_data_t*) (*f);
+    custom_data_t *crhs = (custom_data_t*) (*rhs);
     switch(*piece) {
         case 2:
-            for(int i=0; i<*fdim; i++) {
-                (*y)[i] = (*rhs)[i]/(1.0 - (*dtq)*lam2);
-                (*f)[i] = ((*y)[i] - (*rhs)[i])/(*dtq);
-            }
+            cy->y = crhs->y/(1.0 - (*dtq)*lam2);
+            cf->y = (cy->y - crhs->y)/(*dtq);
             break;
         default:
             printf("Bad case for piece in f_comp %d", *piece);

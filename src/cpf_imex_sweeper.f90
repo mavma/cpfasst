@@ -7,36 +7,29 @@
 module cpf_imex_sweeper
   use pf_mod_ndarray
   use pf_mod_imex_sweeper
+  use cpf_encap
   use iso_c_binding
 
   interface
-    subroutine c_f_eval_interface(y, ydim, t, level_index, f, fdim, piece)
+    subroutine sweeper_f_eval_cb(y, t, level_index, f, piece) bind(C)
       import :: c_double, c_int, c_ptr
       type(c_ptr)     :: y
-      integer(c_int)  :: ydim
       real(c_double)  :: t
       integer(c_int)  :: level_index
       type(c_ptr)     :: f
-      integer(c_int)  :: fdim
       integer(c_int)  :: piece
     end subroutine
-    subroutine c_f_comp_interface(y, ydim, t, dtq, rhs, rhsdim, level_index, f, fdim, piece)
+    subroutine sweeper_f_comp_cb(y, t, dtq, rhs, level_index, f, piece) bind(C)
       import :: c_double, c_int, c_ptr
       type(c_ptr)     :: y
-      integer(c_int)  :: ydim
       real(c_double)  :: t
       real(c_double)  :: dtq
       type(c_ptr)     :: rhs
-      integer(c_int)  :: rhsdim
       integer(c_int)  :: level_index
       type(c_ptr)     :: f
-      integer(c_int)  :: fdim
       integer(c_int)  :: piece
     end subroutine
   end interface
-
-  procedure(c_f_eval_interface), pointer :: c_f_eval
-  procedure(c_f_comp_interface), pointer :: c_f_comp
 
   !>  extend the imex sweeper type with stuff we need to compute rhs
   type, extends(pf_imex_sweeper_t) :: cpf_imex_sweeper_t
@@ -46,22 +39,6 @@ module cpf_imex_sweeper
   end type cpf_imex_sweeper_t
 
 contains
-
-  subroutine set_f_eval(f) bind(c, name="cpf_imex_sweeper_set_feval")
-    use iso_c_binding
-    type(c_funptr), value :: f
-
-    call c_f_procpointer(f, c_f_eval)
-
-  end subroutine
-
-  subroutine set_f_comp(f) bind(c, name="cpf_imex_sweeper_set_fcomp")
-    use iso_c_binding
-    type(c_funptr), value :: f
-
-    call c_f_procpointer(f, c_f_comp)
-
-  end subroutine
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! These routines must be provided for the sweeper
@@ -76,22 +53,15 @@ contains
     real(pfdp),          intent(in   ) :: t
     integer,             intent(in   ) :: level_index
     integer,             intent(in   ) :: piece
-    
-    real(pfdp),      pointer :: yvec(:), fvec(:)
-    type(c_ptr) :: fptr, yptr
 
-    !> Grab the arrays from the encapsulation
-    yvec => get_array1d(y)
-    fvec => get_array1d(f)
+    class(cpf_encap_t), pointer :: py, pf
 
-    fptr = c_loc(fvec)
-    yptr = c_loc(yvec)
-
-    ! without an assignment to f here, changes on C side don't "take", but WHY
-    fvec = yvec
+    !> Cast to cpf_encap_t
+    py => cast_as_cpf(y)
+    pf => cast_as_cpf(f)
 
     ! Compute the function values
-    call c_f_eval(yptr, size(yvec), t, level_index, fptr, size(fvec), piece)
+    call sweeper_f_eval_cb(py%data, t, level_index, pf%data, piece)
 
   end subroutine f_eval
 
@@ -108,16 +78,37 @@ contains
     class(pf_encap_t),   intent(inout) :: f
     integer,             intent(in   ) :: piece
 
-    real(pfdp),      pointer :: yvec(:), rhsvec(:), fvec(:)
+    class(cpf_encap_t), pointer :: py, pf, prhs
 
-    !> Grab the arrays from the encapsulation
-    yvec => get_array1d(y)
-    fvec => get_array1d(f)
-    rhsvec => get_array1d(rhs)
+    !> Cast to cpf_encap_t
+    py => cast_as_cpf(y)
+    pf => cast_as_cpf(f)
+    prhs => cast_as_cpf(rhs)
 
-    call c_f_comp(c_loc(yvec), size(yvec), t, dtq, c_loc(rhsvec), size(rhsvec), level_index, c_loc(fvec), size(fvec), piece)
+    call sweeper_f_comp_cb(py%data, t, dtq, prhs%data, level_index, pf%data, piece)
 
   end subroutine f_comp
+
+  ! FIXME: remove
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !>  Here are some extra routines to help out
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !> Routine to set initial condition.
+  !subroutine initial(y_0)
+  !  type(cpf_encap_t), intent(inout) :: y_0
+  !  call exact(0.0_pfdp, y_0%y)
+  !end subroutine initial
+
+  !> Routine to return the exact solution
+  subroutine exact(t, yex)
+    use probin, only: lam1,lam2
+    real(pfdp), intent(in)  :: t
+    real(pfdp), intent(out) :: yex
+
+    yex=exp((lam1+lam2)*t)
+
+  end subroutine exact
+
 
 end module cpf_imex_sweeper
 
