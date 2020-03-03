@@ -1,6 +1,6 @@
 MPICH_BIN = /opt/mpich/bin
 
-CSRC = sweeper.c encap.c
+CSRC = sweeper.c encap.c cmain.c
 FSRC = probin.f90 cpf_encap.f90 cpf_imex_sweeper.f90 level.f90 hooks.f90 cpf_interface.f90
 BUILDDIR = build
 SRCDIR = src
@@ -25,7 +25,7 @@ FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
-cmain: $(BUILDDIR)/cmain.o $(OBJ)
+cmain: $(OBJ)
 	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
