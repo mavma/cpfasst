@@ -36,8 +36,15 @@ contains
     call pf_pfasst_create(pf, comm, fname=pf_fname)
   end subroutine cpf_pfasst_create
 
-  subroutine cpf_user_obj_allocate() bind(C)
+  subroutine cpf_user_obj_allocate(data_size) bind(C)
+    integer(c_int), intent(in) :: data_size
     integer :: l !!  Level loop index
+    integer :: mpibuflen
+
+    mpibuflen = data_size / sizeof(pfdp)
+    if (mod(data_size, sizeof(pfdp)) .NE. 0) then
+      mpibuflen = mpibuflen + 1 ! round up
+    end if
 
     do l = 1, pf%nlevels
       !>  Allocate the user specific level object
@@ -46,8 +53,8 @@ contains
       allocate(cpf_factory::pf%levels(l)%ulevel%factory)
       !>  Add the sweeper to the level
       allocate(cpf_imex_sweeper_t::pf%levels(l)%ulevel%sweeper)
-      !>  Set the size of the data on this level (here just one)
-      call pf_level_set_size(pf,l,[1])
+      !>  Set the size of the data and mpi buffer length on this level
+      call pf_level_set_size(pf,l,[1],mpibuflen)
     end do
   end subroutine cpf_user_obj_allocate
 

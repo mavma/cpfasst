@@ -5,6 +5,7 @@
 
 #include "cpf_interface.h"
 #include "cpf_sweeper.h"
+#include "data.h"
 
 char fname[256] = "probin.nml";
 
@@ -45,7 +46,8 @@ void run_pfasst() {
     cpf_pfasst_create();
 
     // !> Loop over levels and set some level specific parameters
-    cpf_user_obj_allocate();
+    size_t data_size = sizeof(custom_data_t);
+    cpf_user_obj_allocate(&data_size);
 
     // !>  Set up some pfasst stuff
     cpf_pfasst_setup();

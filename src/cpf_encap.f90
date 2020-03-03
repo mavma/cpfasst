@@ -54,8 +54,6 @@ module cpf_encap
             type(c_ptr),    intent(in)           :: src
             integer(c_int), intent(in), optional :: flags
         end subroutine encap_copy_cb
-        ! TODO: pack
-        ! TODO: unpack
         function encap_norm_cb(data, flags) result(norm) bind(C)
             import :: c_ptr, c_double, c_int
             type(c_ptr),    intent(in)           :: data
@@ -150,7 +148,6 @@ contains
         real(pfdp),         intent(in)              :: val
         integer,            intent(in), optional    :: flags
         call encap_setval_cb(this%data, val, flags)
-
         this%y = val ! FIXME remove me
     end subroutine cpf_setval
 
@@ -170,20 +167,23 @@ contains
 
     !> Subroutine to pack into a flat array for sending
     subroutine cpf_pack(this, z, flags)
-        class(cpf_encap_t), intent(in   ) :: this
-        real(pfdp),     intent(  out) :: z(:)
-        integer,     intent(in   ), optional :: flags
-        ! z = this%y
-        stop "NOT IMPLEMENTED" ! FIXME
+        class(cpf_encap_t), intent(in)              :: this
+        real(pfdp),         intent(out)             :: z(:)
+        integer,            intent(in), optional    :: flags
+        real(pfdp), pointer :: fptr(:)
+        call c_f_pointer(this%data, fptr, [size(z)])
+        z = fptr
     end subroutine cpf_pack
 
     !> Subroutine to unpack  after receiving
     subroutine cpf_unpack(this, z, flags)
-        class(cpf_encap_t), intent(inout) :: this
-        real(pfdp),     intent(in   ) :: z(:)
-        integer,     intent(in   ), optional :: flags
-        ! this%y = z(1)
-        stop "NOT IMPLEMENTED" ! FIXME
+        class(cpf_encap_t), intent(inout)           :: this
+        real(pfdp),         intent(in)              :: z(:)
+        integer,            intent(in), optional    :: flags
+        real(pfdp), pointer :: fptr(:)
+        call c_f_pointer(this%data, fptr, [size(z)])
+        fptr = z
+        this%y = z(1)
     end subroutine cpf_unpack
 
     !> Subroutine to define the norm of the array (here the abs value)
@@ -201,7 +201,6 @@ contains
         class(pf_encap_t),  intent(in   )           :: x
         real(pfdp),         intent(in   )           :: a
         integer,            intent(in   ), optional :: flags
-
         select type(x)
         type is (cpf_encap_t)
             this%y = a * x%y + this%y ! FIXME remove me
