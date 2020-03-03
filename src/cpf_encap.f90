@@ -18,7 +18,7 @@ module cpf_encap
     !>  Type to extend the abstract encap and set procedure pointers
     type, extends(pf_encap_t) :: cpf_encap_t
         type(c_ptr) :: data ! C pointer to encapsulated data
-        !real(pfdp) :: y   !  The scalar value FIXME: remove
+        real(pfdp) :: y   !  The scalar value FIXME: remove
     contains
         procedure :: setval => cpf_setval
         procedure :: copy => cpf_copy
@@ -150,6 +150,7 @@ contains
         real(pfdp),         intent(in)              :: val
         integer,            intent(in), optional    :: flags
         call encap_setval_cb(this%data, val, flags)
+        this%y = val ! FIXME remove me
     end subroutine cpf_setval
 
     !> Subroutine to copy an array
@@ -160,6 +161,7 @@ contains
         select type(src)
         type is (cpf_encap_t)
             call encap_copy_cb(this%data, src%data, flags)
+            this%y = src%y ! FIXME remove me
         class default
             stop "TYPE ERROR"
         end select
@@ -188,7 +190,8 @@ contains
         class(cpf_encap_t), intent(in   ) :: this
         integer,     intent(in   ), optional :: flags
         real(pfdp) :: norm
-        norm = encap_norm_cb(this%data, flags)
+        norm = abs(this%y)
+        ! norm = encap_norm_cb(this%data, flags) FIXME restore
     end function cpf_norm
 
     !> Subroutine to compute y = a x + y where a is a scalar and x and y are arrays
@@ -200,6 +203,7 @@ contains
 
         select type(x)
         type is (cpf_encap_t)
+            this%y = a * x%y + this%y ! FIXME remove me
             call encap_axpy_cb(this%data, a, x%data, flags)
         class default
             stop "TYPE ERROR"
@@ -210,7 +214,8 @@ contains
     subroutine cpf_eprint(this,flags)
         class(cpf_encap_t), intent(inout) :: this
         integer,           intent(in   ), optional :: flags
-        call encap_eprint_cb(this%data, flags)
+        print *, this%y
+        ! call encap_eprint_cb(this%data, flags) FIXME restore
     end subroutine cpf_eprint
 
     !  Helper function to cast an abstract encap to the cpf_encap_t
