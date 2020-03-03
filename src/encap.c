@@ -33,7 +33,7 @@ void encap_copy_cb(void** data, void** src, int* flags) {
 
 double encap_norm_cb(void** data, int* flags) {
     custom_data_t *cdata = (custom_data_t*) (*data);
-    return(abs(cdata->y));
+    return(fabs(cdata->y));
 }
 
 void encap_axpy_cb(void** y, double* a, void** x, int* flags) {
@@ -44,5 +44,5 @@ void encap_axpy_cb(void** y, double* a, void** x, int* flags) {
 
 void encap_eprint_cb(void** data, int* flags) {
     custom_data_t *cdata = (custom_data_t*) (*data);
-    printf("y=%lf\n", cdata->y);
+    printf("  %.16E\n", cdata->y);
 }

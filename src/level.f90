@@ -34,7 +34,6 @@ contains
     y_c => cast_as_cpf(c_vec)
 
     !> Here we use the identity map
-    ! y_f%y=y_c%y
     call y_f%copy(y_c)
   end subroutine interpolate
 
@@ -52,8 +51,7 @@ contains
     y_f => cast_as_cpf(f_vec)
     y_c => cast_as_cpf(c_vec)
 
-    !> Here we use the identity map    
-    !y_c%y = y_f%y
+    !> Here we use the identity map
     call y_c%copy(y_f)
   end subroutine restrict
 

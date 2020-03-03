@@ -150,6 +150,7 @@ contains
         real(pfdp),         intent(in)              :: val
         integer,            intent(in), optional    :: flags
         call encap_setval_cb(this%data, val, flags)
+
         this%y = val ! FIXME remove me
     end subroutine cpf_setval
 
@@ -186,12 +187,12 @@ contains
     end subroutine cpf_unpack
 
     !> Subroutine to define the norm of the array (here the abs value)
-    function cpf_norm(this, flags) result (norm)
+    function cpf_norm(this, flags) result (norm2)
         class(cpf_encap_t), intent(in   ) :: this
         integer,     intent(in   ), optional :: flags
-        real(pfdp) :: norm
-        norm = abs(this%y)
-        ! norm = encap_norm_cb(this%data, flags) FIXME restore
+        real(pfdp) :: normf, norm2
+        normf = abs(this%y) ! FIXME remove
+        norm2 = encap_norm_cb(this%data, flags)
     end function cpf_norm
 
     !> Subroutine to compute y = a x + y where a is a scalar and x and y are arrays
