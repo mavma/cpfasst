@@ -49,8 +49,8 @@ contains
     class(cpf_encap_t), pointer :: y_f, y_c
 
     !>  Cast the abstract encap as my data type
-    y_f => cast_as_scalar(f_vec)
-    y_c => cast_as_scalar(c_vec)
+    y_f => cast_as_cpf(f_vec)
+    y_c => cast_as_cpf(c_vec)
 
     !> Here we use the identity map    
     !y_c%y = y_f%y

@@ -229,16 +229,4 @@ contains
         end select
     end function cast_as_cpf
 
-    !  Helper function to cast an abstract encap to the cpf_encap_t
-    function cast_as_scalar(encap_polymorph) result(cpf_obj) ! FIXME: delete me
-        class(pf_encap_t), intent(in), target :: encap_polymorph
-        type(cpf_encap_t), pointer :: cpf_obj
-
-        select type(encap_polymorph)
-        type is (cpf_encap_t)
-            cpf_obj => encap_polymorph
-        end select
-    end function cast_as_scalar
-
-
 end module cpf_encap
