@@ -1,9 +1,3 @@
-!
-! This file is part of LIBPFASST.
-!
-!
-!> Sweeper and RHS specification for Dahlquist example.
-!>     u_t = lam1*u + lam2*u
 module cpf_imex_sweeper
   use pf_mod_ndarray
   use pf_mod_imex_sweeper

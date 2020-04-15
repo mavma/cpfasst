@@ -1,4 +1,3 @@
-!>  C adapter for LibPFASST/Tutorials/EX1_Dahlquist
 module cpfasst
   use pfasst            !< This module has include statements for the main pfasst routines
   use pf_my_level       !< Local module for level
@@ -6,6 +5,7 @@ module cpfasst
   use probin            !< Local module reading/parsing problem parameters
   use cpf_encap
   use cpf_imex_sweeper
+  use cpf_hooks
   use pf_mod_mpi
 
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
@@ -62,9 +62,12 @@ contains
     call pf_pfasst_setup(pf)
   end subroutine cpf_pfasst_setup
 
-  subroutine cpf_add_hook() bind(C)
-    call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
-    ! call pf_add_hook(pf, -1, PF_POST_ITERATION, echo_error)
+  subroutine cpf_add_hook(level_index, hook, c_fun) bind(C)
+    integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
+    integer(c_int),    intent(in)    :: hook          !! which hook to add
+    type(c_funptr),    value         :: c_fun         !! function pointer to c callback
+    call cpf_add_interop_hook(pf, level_index, hook, c_fun)
+    ! call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
   end subroutine cpf_add_hook
 
   subroutine cpf_print_loc_options() bind(C)

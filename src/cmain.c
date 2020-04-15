@@ -5,7 +5,10 @@
 
 #include "cpf_interface.h"
 #include "cpf_sweeper.h"
+#include "cpf_hooks.h"
+
 #include "data.h"
+#include "hooks.h" // TODO: please kill me
 
 char fname[256] = "probin.nml";
 
@@ -53,7 +56,10 @@ void run_pfasst() {
     cpf_pfasst_setup();
 
     // !> add some hooks for output  (using a LibPFASST hook here)
-    cpf_add_hook();
+    //cpf_add_hook();
+    int level = -1;
+    cpf_hooks_t hook = PF_POST_ITERATION;
+    cpf_add_hook(&level, &hook, &my_custom_hook);
 
     // !>  Output run parameters to screen
     cpf_print_loc_options();
@@ -61,10 +67,6 @@ void run_pfasst() {
     // !>  Allocate initial condition
     // !> Set the initial condition
     cpf_setup_ic();
-
-    // set sweeper functions
-    // cpf_imex_sweeper_set_feval(&feval);
-    // cpf_imex_sweeper_set_fcomp(&fcomp);
 
     // !> Do the PFASST time stepping
     cpf_pfasst_run();
