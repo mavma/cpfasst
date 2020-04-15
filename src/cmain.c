@@ -8,7 +8,7 @@
 #include "cpf_hooks.h"
 
 #include "data.h"
-#include "hooks.h" // TODO: please kill me
+#include "hooks.h" // TODO: remove?
 
 char fname[256] = "probin.nml";
 
@@ -59,7 +59,9 @@ void run_pfasst() {
     //cpf_add_hook();
     int level = -1;
     cpf_hooks_t hook = PF_POST_ITERATION;
-    cpf_add_hook(&level, &hook, &my_custom_hook);
+    void(*cb)(void*,int*) = &my_custom_hook;
+    cpf_add_echo_residual_hook(&level, &hook);
+    // cpf_add_custom_hook(&level, &hook, &cb);
 
     // !>  Output run parameters to screen
     cpf_print_loc_options();

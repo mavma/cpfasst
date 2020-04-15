@@ -62,13 +62,21 @@ contains
     call pf_pfasst_setup(pf)
   end subroutine cpf_pfasst_setup
 
-  subroutine cpf_add_hook(level_index, hook, c_fun) bind(C)
+  subroutine cpf_add_custom_hook(level_index, hook, c_fun) bind(C)
     integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
     integer(c_int),    intent(in)    :: hook          !! which hook to add
-    type(c_funptr),    value         :: c_fun         !! function pointer to c callback
-    call cpf_add_interop_hook(pf, level_index, hook, c_fun)
-    ! call pf_add_hook(pf, -1, PF_POST_ITERATION, pf_echo_residual)
-  end subroutine cpf_add_hook
+    type(c_funptr)                   :: c_fun         !! function pointer to c callback
+    procedure(pf_hook_p), pointer :: procptr
+
+    call c_f_procpointer(c_fun, procptr)
+    call pf_add_hook(pf, level_index, hook, procptr)
+  end subroutine cpf_add_custom_hook
+
+  subroutine cpf_add_echo_residual_hook(level_index, hook) bind(C)
+    integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
+    integer(c_int),    intent(in)    :: hook          !! which hook to add
+    call pf_add_hook(pf, level_index, hook, pf_echo_residual)
+  end subroutine cpf_add_echo_residual_hook
 
   subroutine cpf_print_loc_options() bind(C)
     call print_loc_options(pf,un_opt=6)
