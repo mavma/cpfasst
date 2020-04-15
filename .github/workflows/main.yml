@@ -24,3 +24,16 @@ jobs:
           mpiexec ./cmain sdc.nml
           mpiexec ./cmain multi_level.nml
           mpiexec ./cmain pipeline.nml
+      - name: Run parallel
+        run: |
+          mpiexec -n 4 ./cmain probin.nml
+          mpiexec -n 4 ./cmain sdc.nml
+          mpiexec -n 4 ./cmain multi_level.nml
+          mpiexec -n 4 ./cmain pipeline.nml
+      - name: Test
+        run: |
+          make -C LibPFASST/Tutorials/EX2_Dahlquist/
+          ./tests/ex2_compare.sh probin.nml
+          ./tests/ex2_compare.sh sdc.nml
+          ./tests/ex2_compare.sh multi_level.nml
+          ./tests/ex2_compare.sh pipeline.nml

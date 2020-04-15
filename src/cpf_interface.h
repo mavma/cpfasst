@@ -4,7 +4,7 @@
 void cpf_probin_init();
 void cpf_mpi_create();
 void cpf_pfasst_create();
-void cpf_user_obj_allocate();
+void cpf_user_obj_allocate(size_t* data_size);
 void cpf_pfasst_setup();
 void cpf_add_hook();
 void cpf_print_loc_options();

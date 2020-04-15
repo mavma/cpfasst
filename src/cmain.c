@@ -4,7 +4,8 @@
 #include <mpi.h>
 
 #include "cpf_interface.h"
-#include "sweeper.h"
+#include "cpf_sweeper.h"
+#include "data.h"
 
 char fname[256] = "probin.nml";
 
@@ -15,7 +16,7 @@ int main(int argc, char** argv) {
     // parse fname from command line
     if (argc == 2) {
         strcpy(fname, argv[1]);
-        printf("Reading parameters from %s\n", fname);
+        //printf("Reading parameters from %s\n", fname);
     } else if (argc != 1) {
         printf("Invalid command line parameters\n");
         exit(1);
@@ -45,7 +46,8 @@ void run_pfasst() {
     cpf_pfasst_create();
 
     // !> Loop over levels and set some level specific parameters
-    cpf_user_obj_allocate();
+    size_t data_size = sizeof(custom_data_t);
+    cpf_user_obj_allocate(&data_size);
 
     // !>  Set up some pfasst stuff
     cpf_pfasst_setup();
@@ -61,8 +63,8 @@ void run_pfasst() {
     cpf_setup_ic();
 
     // set sweeper functions
-    cpf_imex_sweeper_set_feval(&feval);
-    cpf_imex_sweeper_set_fcomp(&fcomp);
+    // cpf_imex_sweeper_set_feval(&feval);
+    // cpf_imex_sweeper_set_fcomp(&fcomp);
 
     // !> Do the PFASST time stepping
     cpf_pfasst_run();

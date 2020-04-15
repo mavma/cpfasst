@@ -1,14 +1,14 @@
 MPICH_BIN = /opt/mpich/bin
 
-CSRC = sweeper.c
-FSRC = probin.f90 level.f90 cpf_imex_sweeper.f90 cpf_interface.f90
+CSRC = sweeper.c encap.c cmain.c
+FSRC = probin.f90 cpf_encap.f90 cpf_imex_sweeper.f90 level.f90 hooks.f90 cpf_interface.f90
 BUILDDIR = build
 SRCDIR = src
 
 CC = $(MPICH_BIN)/mpicc
 CFLAGS = -g -O0 -I.
 CLDFLAGS += -LLibPFASST/lib -lpfasst
-CLDFLAGS += -lgfortran -lquadmath
+CLDFLAGS += -lgfortran -lquadmath -lm -ldl
 
 FC = $(MPICH_BIN)/mpif90
 FFLAGS = -g -O0 -ILibPFASST/include
@@ -25,7 +25,8 @@ FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
 
-all: cmain
+cmain: $(OBJ)
+	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(BUILDDIR)
@@ -35,14 +36,21 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.f90
 	@mkdir -p $(BUILDDIR)
 	$(FC) -c -o $@ -J$(BUILDDIR) $< $(FFLAGS)
 
-cmain: $(BUILDDIR)/cmain.o $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
-
 $(OBJ): libpfasst
 
 libpfasst:
 	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
+examples: libpfasst
+	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+
+all: cmain examples
+
 clean:
 	\rm -rf build
 	cd LibPFASST; $(MAKE) clean
+	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean;
+	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean;
+	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) clean;
