@@ -5,7 +5,6 @@
 
 #include "cpf_interface.h"
 #include "cpf_sweeper.h"
-#include "cpf_hooks.h"
 
 #include "data.h"
 #include "hooks.h" // TODO: remove?
@@ -59,8 +58,8 @@ void run_pfasst() {
     //cpf_add_hook();
     int level = -1;
     cpf_hooks_t hook = PF_POST_ITERATION;
-    void(*cb)(void*,int*) = &my_custom_hook;
     cpf_add_echo_residual_hook(&level, &hook);
+    // void(*cb)(void*,int*) = &my_custom_hook;
     // cpf_add_custom_hook(&level, &hook, &cb);
 
     // !>  Output run parameters to screen

@@ -1,11 +1,9 @@
 module cpfasst
   use pfasst            !< This module has include statements for the main pfasst routines
   use pf_my_level       !< Local module for level
-  use hooks             !< Local module for diagnostics and i/o
   use probin            !< Local module reading/parsing problem parameters
   use cpf_encap
   use cpf_imex_sweeper
-  use cpf_hooks
   use pf_mod_mpi
 
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
