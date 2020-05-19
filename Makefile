@@ -41,16 +41,19 @@ $(OBJ): libpfasst
 libpfasst:
 	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
-examples: libpfasst
+libpfasst_examples: libpfasst
 	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	# cd LibPFASST/Tutorials/EX4_Boussinesq; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
-all: cmain examples
+all: cmain libpfasst_examples
 
 clean:
+	\rm -rf cmain
 	\rm -rf build
 	cd LibPFASST; $(MAKE) clean
-	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean;
-	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean;
-	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) clean;
+	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean
+	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean
+	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) clean
+	# cd LibPFASST/Tutorials/EX4_Boussinesq; $(MAKE) clean
