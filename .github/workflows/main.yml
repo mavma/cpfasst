@@ -34,4 +34,4 @@ jobs:
       - name: Test EX2
         run: |
           make -C LibPFASST/Tutorials/EX2_Dahlquist/
-          ./tests/EX2_test.sh
+          ./tests/ex2_test.sh
