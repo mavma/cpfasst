@@ -31,10 +31,7 @@ jobs:
           mpiexec -n 4 ./cmain sdc.nml
           mpiexec -n 4 ./cmain multi_level.nml
           mpiexec -n 4 ./cmain pipeline.nml
-      - name: Test
+      - name: Test EX2
         run: |
           make -C LibPFASST/Tutorials/EX2_Dahlquist/
-          ./tests/ex2_compare.sh probin.nml
-          ./tests/ex2_compare.sh sdc.nml
-          ./tests/ex2_compare.sh multi_level.nml
-          ./tests/ex2_compare.sh pipeline.nml
+          ./tests/EX2_test.sh
