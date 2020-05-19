@@ -15,12 +15,12 @@ FFLAGS = -g -O0 -ILibPFASST/include
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
 FLDFLAGS += -LLibPFASST/lib -lpfasst
 
-# OpenMPI
+# Uncomment next line for OpenMPI
 # FMPIFLAGS += $(shell mpif90 --showme:link)
-# mpich
+# Uncomment next line for mpich
 FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
-# Intel MPI
-# FMPIFLAGS += $(wordlist 2, 999, $(shell mpiifort -show))
+# Uncomment next 2 lines for Intel MPI
+# FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -show))
 # CLDFLAGS += -nofor_main
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o) $(CSRC:.c=.o))
