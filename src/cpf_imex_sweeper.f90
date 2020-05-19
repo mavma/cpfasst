@@ -30,14 +30,12 @@ module cpf_imex_sweeper
    contains
      procedure :: f_eval    !  Computes the advection and diffusion terms
      procedure :: f_comp    !  Does implicit solve
-     ! TODO required?
      procedure :: initialize !  Overwrites imex sweeper initialize
      procedure :: destroy    !  Overwrites imex sweeper destroy
   end type cpf_imex_sweeper_t
 
 contains
 
-  ! TODO required?
   !>  Routine to set up sweeper variables and operators
   subroutine initialize(this, pf,level_index)
     class(cpf_imex_sweeper_t), intent(inout) :: this
@@ -47,13 +45,8 @@ contains
     !>  Call the imex sweeper initialization
     call this%imex_initialize(pf,level_index)
 
-    !>  Set variables for explicit and implicit parts (just to show you can)
-    this%implicit=.TRUE.
-    this%explicit=.TRUE.
-
   end subroutine initialize
 
-  ! TODO required?
   !>  destroy the sweeper type
   subroutine destroy(this, pf,level_index)
     class(cpf_imex_sweeper_t), intent(inout) :: this
@@ -62,8 +55,6 @@ contains
 
     !>  Call the imex sweeper destroy
     call this%imex_destroy(pf,level_index)
-
-    !  Nothing to do
 
   end subroutine destroy
 
@@ -140,27 +131,6 @@ contains
     end if
 
   end subroutine f_comp
-
-  ! FIXME: remove
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !>  Here are some extra routines to help out
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  !> Routine to set initial condition.
-  !subroutine initial(y_0)
-  !  type(cpf_encap_t), intent(inout) :: y_0
-  !  call exact(0.0_pfdp, y_0%y)
-  !end subroutine initial
-
-  !> Routine to return the exact solution
-  subroutine exact(t, yex)
-    use probin, only: lam1,lam2
-    real(pfdp), intent(in)  :: t
-    real(pfdp), intent(out) :: yex
-
-    yex=exp((lam1+lam2)*t)
-
-  end subroutine exact
-
 
 end module cpf_imex_sweeper
 
