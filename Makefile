@@ -11,7 +11,7 @@ CLDFLAGS += -LLibPFASST/lib -lpfasst
 CLDFLAGS += -lgfortran -lquadmath -lm -ldl
 
 FC = $(MPICH_BIN)/mpif90
-FFLAGS = -g -O0 -ILibPFASST/include
+FFLAGS = -g -O0 -ILibPFASST/include -cpp
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
 FLDFLAGS += -LLibPFASST/lib -lpfasst
 

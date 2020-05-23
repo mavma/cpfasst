@@ -94,7 +94,7 @@ contains
         integer,               intent(in   ) ::  lev_shape(:)
         integer :: ierr
         allocate(cpf_encap_t::x,stat=ierr)
-        ! if (ierr /=0) call pf_stop(__FILE__,__LINE__,'allocate fail, error=',ierr) FIXME
+        if (ierr /=0) call pf_stop(__FILE__,__LINE__,'allocate fail, error=',ierr)
         call cpf_encap_build(x, level_index, lev_shape)
     end subroutine cpf_create_single
 
@@ -107,7 +107,7 @@ contains
         integer,               intent(in   ) ::  lev_shape(:)
         integer :: i, ierr
         allocate(cpf_encap_t::x(n),stat=ierr)
-        ! if (ierr /=0) call pf_stop(__FILE__,__LINE__,'allocate fail, error=',ierr) FIXME
+        if (ierr /=0) call pf_stop(__FILE__,__LINE__,'allocate fail, error=',ierr)
         do i = 1, n
             call cpf_encap_build(x(i), level_index, lev_shape)
         end do
