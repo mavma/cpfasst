@@ -31,7 +31,7 @@ contains
     integer :: mpibuflen
 
     mpibuflen = data_size / sizeof(pfdp)
-    if (mod(data_size, sizeof(pfdp)) .NE. 0) then
+    if (mod(data_size, sizeof(pfdp)) /= 0) then
       mpibuflen = mpibuflen + 1 ! round up
     end if
 
@@ -70,10 +70,9 @@ contains
   subroutine cpf_setup_ic() bind(C)
     call cpf_encap_build(y_0, 0, [ 0 ]) !FIXME: what to pass for extra args here?
     call cpf_encap_build(y_end, 0, [ 0 ]) !FIXME: what to pass for extra args here?
-    call y_0%setval(1.0_pfdp)
+    !call y_0%setval(1.0_pfdp)
   end subroutine cpf_setup_ic
 
-  !  class(pf_encap_t), intent(inout   )           :: q0   !!  The initial condition !TODO
   subroutine cpf_pfasst_run(dt, tend, nsteps) bind(C)
     real(c_double),    intent(inout)           :: dt   !!  The time step for each processor
     real(c_double),    intent(in   )           :: tend !!  The final time of run

@@ -8,6 +8,7 @@
 
 #include "data.h"
 #include "hooks.h" // TODO: remove?
+#include "probin.h"
 
 char fname[256] = "probin.nml";
 
@@ -61,8 +62,10 @@ void run_pfasst() {
     cpf_setup_ic();
 
     // !> Do the PFASST time stepping
-    int nsteps = 32;
-    double Tfin = 1.0, lam1 = 1.0, lam2 = -2.0, dt = Tfin/nsteps;
+    int nsteps;
+    double Tfin, lam1, lam2, dt;
+    get_problem_parameters(fname, &Tfin, &nsteps, &lam1, &lam2);
+    dt = Tfin/nsteps;
     cpf_pfasst_run(&dt, NULL, &nsteps);
 
     // !>  Wait for everyone to be done

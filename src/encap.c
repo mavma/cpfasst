@@ -10,7 +10,8 @@
 void factory_create_cb(void** data, int* level_index, int** lev_shape, int* lev_shape_len) {
     *data = malloc(sizeof(custom_data_t));
     custom_data_t *cdata = (custom_data_t*) (*data);
-    cdata->y = 0; // initialize to appease valgrind
+    // Initial condition
+    cdata->y = 1.0;
 }
 
 void factory_destroy_cb(void** data) {
