@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     // parse fname from command line
     if (argc == 2) {
         strcpy(fname, argv[1]);
-        //printf("Reading parameters from %s\n", fname);
+            printf("Reading parameters from %s\n", fname);
     } else if (argc != 1) {
         printf("Invalid command line parameters\n");
         exit(1);
@@ -38,9 +38,6 @@ void run_pfasst() {
 
     set_fname(fname);
 
-    // !> Read problem parameters
-    cpf_probin_init();
-
     // !>  Set up communicator
     cpf_mpi_create();
 
@@ -54,26 +51,23 @@ void run_pfasst() {
     // !>  Set up some pfasst stuff
     cpf_pfasst_setup();
 
-    // !> add some hooks for output  (using a LibPFASST hook here)
-    //cpf_add_hook();
+    // !> add a hook for output
     int level = -1;
     cpf_hooks_t hook = PF_POST_ITERATION;
     cpf_add_echo_residual_hook(&level, &hook);
     // void(*cb)(void*,int*) = &my_custom_hook;
     // cpf_add_custom_hook(&level, &hook, &cb);
 
-    // !>  Output run parameters to screen
-    cpf_print_loc_options();
-    
     // !>  Allocate initial condition
     // !> Set the initial condition
     cpf_setup_ic();
 
     // !> Do the PFASST time stepping
-    cpf_pfasst_run();
-    
+    int nsteps = 32;
+    double Tfin = 1.0, lam1 = 1.0, lam2 = -2.0, dt = Tfin/nsteps;
+    cpf_pfasst_run(&dt, NULL, &nsteps);
+
     // !>  Wait for everyone to be done
-    // call mpi_barrier(pf%comm%comm, ierror)
     MPI_Barrier(MPI_COMM_WORLD);
 
     // !>  Deallocate initial condition and final solution

@@ -1,11 +1,10 @@
 module cpfasst
   use pfasst            !< This module has include statements for the main pfasst routines
   use pf_mod_mpi
-  use probin            !TODO: fix
   use cpf_level
   use cpf_encap
   use cpf_imex_sweeper
-
+  use iso_c_binding
 
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
   type(pf_comm_t)   :: comm    !<  the communicator (here it is mpi)
@@ -16,15 +15,9 @@ module cpfasst
 contains
 
   subroutine set_fname(fname) bind(C)
-    use iso_c_binding, only: c_char, c_int
     character(c_char) :: fname(256)
     pf_fname = transfer(fname, pf_fname)
   end subroutine set_fname
-
-  subroutine cpf_probin_init() bind(C)
-    use probin
-    call probin_init(pf_fname)
-  end subroutine cpf_probin_init
 
   subroutine cpf_mpi_create() bind(C)
     call pf_mpi_create(comm, MPI_COMM_WORLD)
@@ -77,19 +70,19 @@ contains
     call pf_add_hook(pf, level_index, hook, pf_echo_residual)
   end subroutine cpf_add_echo_residual_hook
 
-  subroutine cpf_print_loc_options() bind(C)
-    call print_loc_options(pf,un_opt=6)
-  end subroutine cpf_print_loc_options
-
   subroutine cpf_setup_ic() bind(C)
     call cpf_encap_build(y_0, 0, [ 0 ]) !FIXME: what to pass for extra args here?
     call cpf_encap_build(y_end, 0, [ 0 ]) !FIXME: what to pass for extra args here?
     call y_0%setval(1.0_pfdp)
   end subroutine cpf_setup_ic
 
-  subroutine cpf_pfasst_run() bind(C)
-    call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps,y_end)
-  end subroutine cpf_pfasst_run 
+  !  class(pf_encap_t), intent(inout   )           :: q0   !!  The initial condition !TODO
+  subroutine cpf_pfasst_run(dt, tend, nsteps) bind(C)
+    real(c_double),    intent(inout)           :: dt   !!  The time step for each processor
+    real(c_double),    intent(in   )           :: tend !!  The final time of run
+    integer(c_int),    intent(in   ), optional :: nsteps  !!  The number of time steps
+    call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps, y_end)
+  end subroutine cpf_pfasst_run
 
   subroutine cpf_cleanup() bind(C)
     call cpf_encap_destroy(y_0)

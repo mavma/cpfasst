@@ -1,15 +1,17 @@
 #pragma once
 
 // Forward declaration of Fortran routines
-void cpf_probin_init();
 void cpf_mpi_create();
 void cpf_pfasst_create();
 void cpf_user_obj_allocate(size_t* data_size);
 void cpf_pfasst_setup();
-void cpf_add_hook();
-void cpf_print_loc_options();
 void cpf_setup_ic();
-void cpf_pfasst_run();
+//real(c_double),    intent(inout)           :: dt   !!  The time step for each processor
+//real(c_double),    intent(in   )           :: tend !!  The final time of run
+//integer(c_int),    intent(in   ), optional :: nsteps  !!  The number of time steps
+//  The user can either pass in the number of time steps or
+//  pass in the time step size and length of run
+void cpf_pfasst_run(double* dt, double* tend, int* nsteps);
 void cpf_cleanup();
 
 void set_fname(char*);

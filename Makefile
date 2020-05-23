@@ -1,7 +1,7 @@
 MPICH_BIN = /opt/mpich/bin
 
 CSRC = sweeper.c encap.c hooks.c level.c cmain.c
-FSRC = probin.f90 cpf_encap.f90 cpf_imex_sweeper.f90 cpf_level.f90 hooks.f90 cpf_interface.f90
+FSRC = cpf_encap.f90 cpf_imex_sweeper.f90 cpf_level.f90 hooks.f90 cpf_interface.f90
 BUILDDIR = build
 SRCDIR = src
 

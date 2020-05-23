@@ -1,5 +1,4 @@
 module cpf_imex_sweeper
-  use pf_mod_ndarray
   use pf_mod_imex_sweeper
   use cpf_encap
   use iso_c_binding
@@ -63,7 +62,6 @@ contains
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ! Evaluate the explicit function at y, t.
   subroutine f_eval(this, y, t, level_index, f, piece)
-    use probin, only:  lam1, lam2
     use iso_c_binding, only: c_ptr
     class(cpf_imex_sweeper_t), intent(inout) :: this
     class(pf_encap_t),   intent(in   ) :: y
@@ -74,18 +72,14 @@ contains
 
     class(cpf_encap_t), pointer :: py, pf
 
-    !> Cast to cpf_encap_t
     py => cast_as_cpf(y)
     pf => cast_as_cpf(f)
-
-    ! Compute the function values
     call sweeper_f_eval_cb(py%data, t, level_index, pf%data, piece)
 
   end subroutine f_eval
 
   !> Solve for y and return f2 also.
   subroutine f_comp(this, y, t, dtq, rhs, level_index, f,piece)
-    use probin, only:  lam1, lam2
     use iso_c_binding, only: c_ptr
     class(cpf_imex_sweeper_t), intent(inout) :: this
     class(pf_encap_t),   intent(inout) :: y
@@ -95,15 +89,13 @@ contains
     integer,             intent(in   ) :: level_index
     class(pf_encap_t),   intent(inout) :: f
     integer,             intent(in   ) :: piece
-
     class(cpf_encap_t), pointer :: py, pf, prhs
 
-    !> Cast to cpf_encap_t
     py => cast_as_cpf(y)
     pf => cast_as_cpf(f)
     prhs => cast_as_cpf(rhs)
-
     call sweeper_f_comp_cb(py%data, t, dtq, prhs%data, level_index, pf%data, piece)
+
   end subroutine f_comp
 
 end module cpf_imex_sweeper
