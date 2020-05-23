@@ -10,21 +10,18 @@ module cpfasst
   type(pf_comm_t)   :: comm    !<  the communicator (here it is mpi)
   type(cpf_encap_t)   :: y_0      !<  the initial condition
   type(cpf_encap_t)   :: y_end      !<  the initial condition
-  character(256)    :: pf_fname   !<  file name for input of PFASST parameters
 
 contains
-
-  subroutine set_fname(fname) bind(C)
-    character(c_char) :: fname(256)
-    pf_fname = transfer(fname, pf_fname)
-  end subroutine set_fname
 
   subroutine cpf_mpi_create() bind(C)
     call pf_mpi_create(comm, MPI_COMM_WORLD)
   end subroutine cpf_mpi_create
 
   !> Create a PFASST object
-  subroutine cpf_pfasst_create() bind(C)
+  subroutine cpf_pfasst_create(fname) bind(C)
+    character(c_char), intent(in) :: fname(256)
+    character(256) :: pf_fname
+    pf_fname = transfer(fname, pf_fname)
     call pf_pfasst_create(pf, comm, fname=pf_fname)
   end subroutine cpf_pfasst_create
 

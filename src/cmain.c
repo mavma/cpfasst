@@ -36,13 +36,11 @@ int main(int argc, char** argv) {
 
 void run_pfasst() {
 
-    set_fname(fname);
-
     // !>  Set up communicator
     cpf_mpi_create();
 
     // !>  Create the pfasst structure
-    cpf_pfasst_create();
+    cpf_pfasst_create(fname);
 
     // !> Loop over levels and set some level specific parameters
     size_t data_size = sizeof(custom_data_t);

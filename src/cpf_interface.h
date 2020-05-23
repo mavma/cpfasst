@@ -2,7 +2,8 @@
 
 // Forward declaration of Fortran routines
 void cpf_mpi_create();
-void cpf_pfasst_create();
+// pointer to char[256]
+void cpf_pfasst_create(char*);
 void cpf_user_obj_allocate(size_t* data_size);
 void cpf_pfasst_setup();
 void cpf_setup_ic();
@@ -13,8 +14,6 @@ void cpf_setup_ic();
 //  pass in the time step size and length of run
 void cpf_pfasst_run(double* dt, double* tend, int* nsteps);
 void cpf_cleanup();
-
-void set_fname(char*);
 
 void cpf_imex_sweeper_set_feval(void*);
 void cpf_imex_sweeper_set_fcomp(void*);
