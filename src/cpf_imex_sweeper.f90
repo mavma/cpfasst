@@ -81,17 +81,6 @@ contains
     ! Compute the function values
     call sweeper_f_eval_cb(py%data, t, level_index, pf%data, piece)
 
-    ! Compute the function values FIXME remove
-    select case (piece)
-    case (1)  ! Explicit piece
-      pf%y = lam1*py%y
-    case (2)  ! Implicit piece
-      pf%y = lam2*py%y
-    case DEFAULT
-      print *,'Bad case for piece in f_eval ', piece
-      call exit(0)
-    end select
-
   end subroutine f_eval
 
   !> Solve for y and return f2 also.
@@ -115,21 +104,6 @@ contains
     prhs => cast_as_cpf(rhs)
 
     call sweeper_f_comp_cb(py%data, t, dtq, prhs%data, level_index, pf%data, piece)
-
-
-    ! FIXME remove
-    if (piece == 2) then
-
-      !  Do the solve
-      py%y =  prhs%y/(1.0_pfdp - dtq*lam2)
-
-      !  The function is easy to derive  (equivalent to lam2*y)
-      pf%y = (py%y - prhs%y) / dtq
-    else
-      print *,'Bad piece in f_comp ',piece
-      call exit(0)
-    end if
-
   end subroutine f_comp
 
 end module cpf_imex_sweeper
