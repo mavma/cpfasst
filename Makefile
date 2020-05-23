@@ -1,7 +1,7 @@
 MPICH_BIN = /opt/mpich/bin
 
-CSRC = sweeper.c encap.c hooks.c cmain.c
-FSRC = probin.f90 cpf_encap.f90 cpf_imex_sweeper.f90 level.f90 hooks.f90 cpf_interface.f90
+CSRC = sweeper.c encap.c hooks.c level.c cmain.c
+FSRC = probin.f90 cpf_encap.f90 cpf_imex_sweeper.f90 cpf_level.f90 hooks.f90 cpf_interface.f90
 BUILDDIR = build
 SRCDIR = src
 
@@ -52,6 +52,8 @@ all: cmain libpfasst_examples
 clean:
 	\rm -rf cmain
 	\rm -rf build
+
+clean_all: clean
 	cd LibPFASST; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean

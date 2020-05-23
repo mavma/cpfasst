@@ -1,10 +1,11 @@
 module cpfasst
   use pfasst            !< This module has include statements for the main pfasst routines
-  use pf_my_level       !< Local module for level
-  use probin            !< Local module reading/parsing problem parameters
+  use pf_mod_mpi
+  use probin            !TODO: fix
+  use cpf_level
   use cpf_encap
   use cpf_imex_sweeper
-  use pf_mod_mpi
+
 
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
   type(pf_comm_t)   :: comm    !<  the communicator (here it is mpi)
@@ -46,7 +47,7 @@ contains
 
     do l = 1, pf%nlevels
       !>  Allocate the user specific level object
-      allocate(my_level_t::pf%levels(l)%ulevel)
+      allocate(cpf_level_t::pf%levels(l)%ulevel)
       !>  Allocate the user specific data constructor
       allocate(cpf_factory::pf%levels(l)%ulevel%factory)
       !>  Add the sweeper to the level

@@ -8,18 +8,12 @@
 #include "data.h"
 
 void factory_create_cb(void** data, int* level_index, int** lev_shape, int* lev_shape_len) {
-    static int callcount = 0;
-    callcount++;
-    // printf("Create called %d\n", callcount);
     *data = malloc(sizeof(custom_data_t));
     custom_data_t *cdata = (custom_data_t*) (*data);
     cdata->y = 0; // initialize to appease valgrind
 }
 
 void factory_destroy_cb(void** data) {
-    static int callcount = 0;
-    callcount++;
-    // printf("Destroy called %d\n", callcount);
     free(*data);
 }
 
