@@ -1,3 +1,4 @@
-build
-dat/*
-cmain
+**/build/
+**/dat/
+**/lib/
+**/main
