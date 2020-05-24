@@ -25,7 +25,7 @@ libpfasst_examples: libpfasst
 	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
-all: cmain libpfasst_examples
+all: lib/libcpfasst.a libpfasst_examples
 
 clean:
 	\rm -r lib
