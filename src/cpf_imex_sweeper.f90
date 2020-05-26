@@ -87,7 +87,7 @@ contains
 
     py => cast_as_cpf(y)
     pf => cast_as_cpf(f)
-    call sweeper_f_eval_cb(py%data, t, level_index, pf%data, piece)
+    call imex_sweeper_f_eval_cb(py%data, t, level_index, pf%data, piece)
 
   end subroutine f_eval
 
@@ -107,7 +107,7 @@ contains
     py => cast_as_cpf(y)
     pf => cast_as_cpf(f)
     prhs => cast_as_cpf(rhs)
-    call sweeper_f_comp_cb(py%data, t, dtq, prhs%data, level_index, pf%data, piece)
+    call imex_sweeper_f_comp_cb(py%data, t, dtq, prhs%data, level_index, pf%data, piece)
 
   end subroutine f_comp
 

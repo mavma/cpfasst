@@ -9,12 +9,17 @@ include $(CPFASST)/common.mk
 
 OBJ  = $(addprefix $(BUILDDIR)/,$(SRC:.c=.o))
 
-main: $(OBJ) $(CPFASST)/lib/libcpfasst.a
+main: $(OBJ)
 	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(BUILDDIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
+
+$(OBJ) : cpfasst
+
+cpfasst:
+	cd ../..; $(MAKE)
 
 clean:
 	\rm main

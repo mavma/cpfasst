@@ -6,6 +6,10 @@ jobs:
   test-ubuntu:
     if: "!contains(github.event.head_commit.message, 'skip-ci')"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tutorial: ["EX2_Dahlquist"]
+        mpi_bin: ["/usr/bin/"]
     steps:
       - uses: actions/checkout@v2
       - name: Checkout submodules
@@ -18,20 +22,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install mpich
-      - name: Compile and run 
+      - name: Compile
         run: |
-          make MPICH_BIN=/usr/bin
-          mpiexec ./cmain probin.nml
-          mpiexec ./cmain sdc.nml
-          mpiexec ./cmain multi_level.nml
-          mpiexec ./cmain pipeline.nml
+          cd examples/${{ matrix.tutorial }}
+          make MPI_BIN=${{ matrix.mpi_bin }}
+      - name: Run sequential
+        run: ./tests/run_example.sh EX2_Dahlquist
       - name: Run parallel
+        run: ./tests/run_example.sh -n 4 EX2_Dahlquist
+      - name: Test
         run: |
-          mpiexec -n 4 ./cmain probin.nml
-          mpiexec -n 4 ./cmain sdc.nml
-          mpiexec -n 4 ./cmain multi_level.nml
-          mpiexec -n 4 ./cmain pipeline.nml
-      - name: Test EX2
-        run: |
-          make -C LibPFASST/Tutorials/EX2_Dahlquist/
+          make MPI_BIN=${{ matrix.mpi_bin }} -C LibPFASST/Tutorials/${{ matrix.tutorial }}
           ./tests/ex2_test.sh
