@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "data.h"
+#include "local.h"
 
 void factory_create_cb(void** data, int* level_index, int** lev_shape, int* lev_shape_len) {
     *data = malloc(sizeof(custom_data_t));
