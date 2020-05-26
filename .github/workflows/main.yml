@@ -12,9 +12,6 @@ jobs:
         mpi_bin: ["/usr/bin/"]
     steps:
       - uses: actions/checkout@v2
-      - env:
-          - lpf_dir: LibPFASST/Tutorials/${{ matrix.tutorial }}
-          - cpf_dir: examples/${{ matrix.tutorial }}
       - name: Checkout submodules
         shell: bash
         run: |
@@ -27,7 +24,7 @@ jobs:
           sudo apt-get -y install mpich
       - name: Compile
         run: |
-          cd $cpf_dir
+          cd examples/${{ matrix.tutorial }}
           make MPI_BIN=${{ matrix.mpi_bin }}
       - name: Run sequential
         run: ./tests/run_example.sh EX2_Dahlquist
@@ -35,5 +32,5 @@ jobs:
         run: ./tests/run_example.sh -n 4 EX2_Dahlquist
       - name: Test
         run: |
-          make -C LibPFASST/Tutorials/EX2_Dahlquist/
+          make MPI_BIN=${{ matrix.mpi_bin }} -C LibPFASST/Tutorials/${{ matrix.tutorial }}
           ./tests/ex2_test.sh
