@@ -4,7 +4,17 @@ module cpf_imex_sweeper
   use iso_c_binding
 
   interface
-    subroutine sweeper_f_eval_cb(y, t, level_index, f, piece) bind(C)
+    subroutine imex_sweeper_initialize_cb(level_index, explicit, implicit) bind(C)
+      import :: c_int, c_bool
+      integer(c_int)  :: level_index
+      logical(c_bool) :: explicit
+      logical(c_bool) :: implicit
+    end subroutine
+    subroutine imex_sweeper_destroy_cb(level_index) bind(C)
+      import :: c_int, c_bool
+      integer(c_int)  :: level_index
+    end subroutine
+    subroutine imex_sweeper_f_eval_cb(y, t, level_index, f, piece) bind(C)
       import :: c_double, c_int, c_ptr
       type(c_ptr)     :: y
       real(c_double)  :: t
@@ -12,7 +22,7 @@ module cpf_imex_sweeper
       type(c_ptr)     :: f
       integer(c_int)  :: piece
     end subroutine
-    subroutine sweeper_f_comp_cb(y, t, dtq, rhs, level_index, f, piece) bind(C)
+    subroutine imex_sweeper_f_comp_cb(y, t, dtq, rhs, level_index, f, piece) bind(C)
       import :: c_double, c_int, c_ptr
       type(c_ptr)     :: y
       real(c_double)  :: t
@@ -40,10 +50,14 @@ contains
     class(cpf_imex_sweeper_t), intent(inout) :: this
     type(pf_pfasst_t), intent(inout),target :: pf
     integer, intent(in) :: level_index
+    logical(c_bool) :: cpf_exp, cpf_imp
 
-    !>  Call the imex sweeper initialization
     call this%imex_initialize(pf,level_index)
-
+    cpf_exp = this%explicit
+    cpf_imp = this%implicit
+    call imex_sweeper_initialize_cb(level_index, cpf_exp, cpf_imp)
+    this%explicit = cpf_exp
+    this%implicit = cpf_imp
   end subroutine initialize
 
   !>  destroy the sweeper type
@@ -52,9 +66,8 @@ contains
     type(pf_pfasst_t), intent(inout), target :: pf
     integer, intent(in) :: level_index
 
-    !>  Call the imex sweeper destroy
     call this%imex_destroy(pf,level_index)
-
+    call imex_sweeper_destroy_cb(level_index)
   end subroutine destroy
 
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

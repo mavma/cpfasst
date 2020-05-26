@@ -10,7 +10,10 @@
 const double lam1 =  1.0;
 const double lam2 = -2.0;
 
-void sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
+void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit) {}
+void imex_sweeper_destroy_cb(int* level_index) {}
+
+void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
     custom_data_t *cy = (custom_data_t*) (*y);
     custom_data_t *cf = (custom_data_t*) (*f);
     switch(*piece) {
@@ -28,7 +31,7 @@ void sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* pie
     return;
 }
 
-void sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
+void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
     custom_data_t *cy = (custom_data_t*) (*y);
     custom_data_t *cf = (custom_data_t*) (*f);
     custom_data_t *crhs = (custom_data_t*) (*rhs);
