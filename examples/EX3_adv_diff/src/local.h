@@ -2,8 +2,10 @@
 
 #include <cpf_static.h>
 
+// 1D array
 typedef struct custom_data_struct {
-    double y;
+    double *array;
+    size_t size;
 } custom_data_t;
 
 typedef struct local_prm_struct {
