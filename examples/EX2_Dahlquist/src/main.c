@@ -4,7 +4,7 @@
 #include <mpi.h>
 
 #include "cpf_interface.h"
-#include "cpf_sweeper.h"
+#include "cpf_imex_sweeper.h"
 
 #include "data.h"
 #include "hooks.h" // TODO: remove?
