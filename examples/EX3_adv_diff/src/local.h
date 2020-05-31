@@ -4,10 +4,10 @@
 #include "fft_tool.h"
 
 // 1D array
-typedef struct custom_data_struct {
+typedef struct my_data_struct {
     double *array;
     size_t size;
-} custom_data_t;
+} my_data_t;
 
 typedef struct local_prm_struct {
     double v;               // advection velocity
@@ -27,6 +27,7 @@ typedef struct my_sweeper_struct {
     fft_tool_t* fft_tool;
     complex double *opE;    // Explicit spectral operator
     complex double *opI;    // Implicit spectral operator
+    complex double *tmp;    // Temp array used in f_comp
 } my_sweeper_t;
 
 extern local_prm_t local_prm;

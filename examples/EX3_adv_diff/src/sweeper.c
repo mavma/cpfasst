@@ -21,9 +21,10 @@ void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit
     make_lap_1d(this->fft_tool, lap);
     make_deriv_1d(this->fft_tool, ddx);
 
-    // allocate operators for implicit and explicit parts
+    // allocate operators
     this->opE = (complex double*) cpf_calloc_and_check(nx, sizeof(complex double));
     this->opI = (complex double*) cpf_calloc_and_check(nx, sizeof(complex double));
+    this->tmp = (complex double*) cpf_calloc_and_check(nx, sizeof(complex double));
 
     // set variables and operators for explicit and implicit parts depending on imex_stat
     switch(local_prm.imex_stat) {
@@ -51,7 +52,8 @@ void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit
                 this->opI[i] = local_prm.nu * lap[i];
             }
             break;
-        default: cpf_stop("Invalid value for imex_stat");
+        default:
+            cpf_stop("Invalid value for imex_stat");
     }
 
 }
@@ -65,43 +67,54 @@ void imex_sweeper_destroy_cb(int* level_index) {
     // deallocate FFT operators
     free(this->opE);
     free(this->opI);
+    free(this->tmp);
     // deallocate sweeper
     free(this);
 }
 
 void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
-    custom_data_t *cy = (custom_data_t*) (*y);
-    custom_data_t *cf = (custom_data_t*) (*f);
+    my_sweeper_t *this = sweepers[*level_index - 1];
+    my_data_t *cy = (my_data_t*) (*y);
+    my_data_t *cf = (my_data_t*) (*f);
 
     switch(*piece) {
         case 1: // Explicit piece
-            cf->y = local_prm.lam1*cy->y;
+            // call fft%conv(yvec,this%opE,fvec)
+            conv_1d(this->fft_tool, cy->array, this->opE, cf->array);
             break;
         case 2: // Implicit piece
-            cf->y = local_prm.lam2*cy->y;
+            // call fft%conv(yvec,this%opI,fvec)
+            conv_1d(this->fft_tool, cy->array, this->opI, cf->array);
             break;
         default:
-            printf("Bad case for piece in f_eval: %d", *piece);
-            exit(0);
-            break;
+            cpf_stop("Bad case for piece in f_eval");
     }
     return;
 }
 
 void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
-    custom_data_t *cy = (custom_data_t*) (*y);
-    custom_data_t *cf = (custom_data_t*) (*f);
-    custom_data_t *crhs = (custom_data_t*) (*rhs);
+    my_sweeper_t *this = sweepers[*level_index - 1];
+    my_data_t *cy = (my_data_t*) (*y);
+    my_data_t *cf = (my_data_t*) (*f);
+    my_data_t *crhs = (my_data_t*) (*rhs);
+
+    if(local_prm.imex_stat == 0) {
+        printf("cpfasst: We should not be calling fcomp for fully explicit");
+        for(int i=0; i<cy->size; i++) {
+            cy->array[i] = crhs->array[i];
+            cf->array[i] = 0;
+        }
+        return;
+    }
 
     switch(*piece) {
         case 2:
-            cy->y = crhs->y/(1.0 - (*dtq)*local_prm.lam2);
-            cf->y = (cy->y - crhs->y)/(*dtq);
+            // Apply the inverse operator with the FFT convolution
+            for(int i=0; i<cy->size; i++) this->tmp[i] = 1.0/(1.0 - (*dtq)*this->opI[i]);
+            conv_1d(this->fft_tool, crhs->array, this->tmp, cy->array);
             break;
         default:
-            printf("Bad case for piece in f_comp: %d", *piece);
-            exit(0);
-            break;
+            cpf_stop("Bad case for piece in f_eval");
     }
     return;
 }
