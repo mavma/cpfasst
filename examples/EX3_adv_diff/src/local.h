@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cpf_static.h>
+#include "fft_tool.h"
 
 // 1D array
 typedef struct custom_data_struct {
@@ -22,4 +23,11 @@ typedef struct local_prm_struct {
     char pfasst_nml[128];   // file for reading pfasst parameters
 } local_prm_t;
 
+typedef struct my_sweeper_struct {
+    fft_tool_t* fft_tool;
+    complex double *opE;    // Explicit spectral operator
+    complex double *opI;    // Implicit spectral operator
+} my_sweeper_t;
+
 extern local_prm_t local_prm;
+extern my_sweeper_t *sweepers[PF_MAXLEVS];
