@@ -4,15 +4,17 @@ module cpf_level
     use iso_c_binding
 
     interface
-        subroutine level_interpolate_cb(f_lev, c_lev, f_vec, c_vec, t, flags) bind(C)
+        subroutine level_interpolate_cb(f_lev_idx, c_lev_idx, f_vec, c_vec, t, flags) bind(C)
             import :: c_double, c_int, c_ptr
-            type(c_ptr)     :: f_lev, c_lev, f_vec, c_vec
+            integer(c_int)  :: f_lev_idx, c_lev_idx
+            type(c_ptr)     :: f_vec, c_vec
             real(c_double)  :: t
             integer(c_int)  :: flags
         end subroutine
-        subroutine level_restrict_cb(f_lev, c_lev, f_vec, c_vec, t, flags) bind(C)
+        subroutine level_restrict_cb(f_lev_idx, c_lev_idx, f_vec, c_vec, t, flags) bind(C)
             import :: c_double, c_int, c_ptr
-            type(c_ptr)     :: f_lev, c_lev, f_vec, c_vec
+            integer(c_int)  :: f_lev_idx, c_lev_idx
+            type(c_ptr)     :: f_vec, c_vec
             real(c_double)  :: t
             integer(c_int)  :: flags
         end subroutine
@@ -44,7 +46,7 @@ contains
         y_f => cast_as_cpf(f_vec)
         y_c => cast_as_cpf(c_vec)
 
-        call level_interpolate_cb(C_NULL_PTR, C_NULL_PTR, y_f%data, y_c%data, t, flags)
+        call level_interpolate_cb(f_lev%index, c_lev%index, y_f%data, y_c%data, t, flags)
     end subroutine interpolate
 
     !>  Restrict from fine level to coarse
@@ -61,7 +63,7 @@ contains
         y_f => cast_as_cpf(f_vec)
         y_c => cast_as_cpf(c_vec)
 
-        call level_restrict_cb(C_NULL_PTR, C_NULL_PTR, y_f%data, y_c%data, t, flags)
+        call level_restrict_cb(f_lev%index, c_lev%index, y_f%data, y_c%data, t, flags)
     end subroutine restrict
 
 end module cpf_level
