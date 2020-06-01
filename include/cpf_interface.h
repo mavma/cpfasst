@@ -1,5 +1,12 @@
 #pragma once
 
+// These functions are defined in Fortran to be called from C
+
+// Setup initial condition
+void setup_initial_condition_cb(void** data);
+// Setup final condition
+void setup_final_condition_cb(void** data);
+
 // Forward declaration of Fortran routines
 void cpf_mpi_create();
 // pointer to char[256]
@@ -17,6 +24,9 @@ void cpf_cleanup();
 
 void cpf_imex_sweeper_set_feval(void*);
 void cpf_imex_sweeper_set_fcomp(void*);
+
+void cpf_setup_initial_condition_cb(void*);
+void cpf_setup_final_condition_cb(void*);
 
 // Hooks
 

@@ -77,17 +77,15 @@ void imex_sweeper_destroy_cb(int* level_index) {
 
 void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
     my_sweeper_t *this = sweepers[*level_index - 1];
-    my_data_t *cy = (my_data_t*) (*y);
-    my_data_t *cf = (my_data_t*) (*f);
+    my_data_t *y_ = (my_data_t*) (*y);
+    my_data_t *f_ = (my_data_t*) (*f);
 
     switch(*piece) {
         case 1: // Explicit piece
-            // call fft%conv(yvec,this%opE,fvec)
-            conv_1d(this->fft_tool, cy->array, this->opE, cf->array);
+            conv_1d(this->fft_tool, y_->array, this->opE, f_->array);
             break;
         case 2: // Implicit piece
-            // call fft%conv(yvec,this%opI,fvec)
-            conv_1d(this->fft_tool, cy->array, this->opI, cf->array);
+            conv_1d(this->fft_tool, y_->array, this->opI, f_->array);
             break;
         default:
             cpf_stop("Bad case for piece in f_eval");
@@ -97,15 +95,15 @@ void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int
 
 void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
     my_sweeper_t *this = sweepers[*level_index - 1];
-    my_data_t *cy = (my_data_t*) (*y);
-    my_data_t *cf = (my_data_t*) (*f);
-    my_data_t *crhs = (my_data_t*) (*rhs);
+    my_data_t *y_ = (my_data_t*) (*y);
+    my_data_t *f_ = (my_data_t*) (*f);
+    my_data_t *rhs_ = (my_data_t*) (*rhs);
 
     if(local_prm.imex_stat == 0) {
         printf("cpfasst: We should not be calling fcomp for fully explicit");
-        for(int i=0; i<cy->size; i++) {
-            cy->array[i] = crhs->array[i];
-            cf->array[i] = 0;
+        for(int i=0; i<y_->size; i++) {
+            y_->array[i] = rhs_->array[i];
+            f_->array[i] = 0;
         }
         return;
     }
@@ -113,8 +111,9 @@ void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* l
     switch(*piece) {
         case 2:
             // Apply the inverse operator with the FFT convolution
-            for(int i=0; i<cy->size; i++) this->tmp[i] = 1.0/(1.0 - (*dtq)*this->opI[i]);
-            conv_1d(this->fft_tool, crhs->array, this->tmp, cy->array);
+            for(int i=0; i<y_->size; i++) this->tmp[i] = 1.0/(1.0 - (*dtq)*this->opI[i]);
+            conv_1d(this->fft_tool, rhs_->array, this->tmp, y_->array);
+            for(int i=0; i<y_->size; i++) f_->array[i] = (y_->array[i] - rhs_->array[i]) / *dtq;
             break;
         default:
             cpf_stop("Bad case for piece in f_eval");

@@ -183,11 +183,11 @@ contains
     end subroutine cpf_unpack
 
     !> Subroutine to define the norm of the array (here the abs value)
-    function cpf_norm(this, flags) result (norm2)
+    function cpf_norm(this, flags) result (norm)
         class(cpf_encap_t), intent(in   ) :: this
         integer,     intent(in   ), optional :: flags
-        real(pfdp) :: normf, norm2
-        norm2 = encap_norm_cb(this%data, flags)
+        real(pfdp) :: norm
+        norm = encap_norm_cb(this%data, flags)
     end function cpf_norm
 
     !> Subroutine to compute y = a x + y where a is a scalar and x and y are arrays

@@ -6,6 +6,17 @@ module cpfasst
   use cpf_imex_sweeper
   use iso_c_binding
 
+  interface
+    subroutine setup_initial_condition_cb(data) bind(C)
+      import :: c_ptr
+      type(c_ptr),    intent(out) :: data
+    end subroutine
+    subroutine setup_final_condition_cb(data) bind(C)
+      import :: c_ptr
+      type(c_ptr),    intent(out) :: data
+    end subroutine
+  end interface
+
   type(pf_pfasst_t) :: pf  !<  the main pfasst structure
   type(pf_comm_t)   :: comm    !<  the communicator (here it is mpi)
   type(cpf_encap_t)   :: y_0      !<  the initial condition
@@ -68,9 +79,8 @@ contains
   end subroutine cpf_add_echo_residual_hook
 
   subroutine cpf_setup_ic() bind(C)
-    call cpf_encap_build(y_0, 0, [ 0 ]) !FIXME: what to pass for extra args here?
-    call cpf_encap_build(y_end, 0, [ 0 ]) !FIXME: what to pass for extra args here?
-    !call y_0%setval(1.0_pfdp)
+    call setup_initial_condition_cb(y_0%data)
+    call setup_final_condition_cb(y_end%data)
   end subroutine cpf_setup_ic
 
   subroutine cpf_pfasst_run(dt, tend, nsteps) bind(C)
