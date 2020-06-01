@@ -47,9 +47,9 @@ module cpf_encap
             real(c_double), intent(in)           :: val
             integer(c_int), intent(in), optional :: flags
         end subroutine
-        subroutine encap_copy_cb(data, src, flags) bind(C)
+        subroutine encap_copy_cb(dst, src, flags) bind(C)
             import :: c_ptr, c_int
-            type(c_ptr),    intent(in)           :: data
+            type(c_ptr),    intent(in)           :: dst
             type(c_ptr),    intent(in)           :: src
             integer(c_int), intent(in), optional :: flags
         end subroutine encap_copy_cb

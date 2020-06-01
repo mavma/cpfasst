@@ -5,7 +5,6 @@
 #include "fft_tool.h"
 
 typedef struct my_data_struct {
-    int level_index;
     size_t size;
     double *array;
 } my_data_t;

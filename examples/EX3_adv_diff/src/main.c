@@ -5,10 +5,9 @@
 
 #include <cpf_interface.h>
 #include <cpf_imex_sweeper.h>
-#include <cpf_utils.h>
+#include "utils.h"
 
 #include "shared.h"
-//#include "hooks.h" // TODO: remove?
 #include "probin.h"
 #include "solution.h"
 
@@ -17,12 +16,11 @@ char fname[256] = "probin.nml";
 void setup_initial_condition_cb(void** data) {
     *data = malloc(sizeof(my_data_t));
     my_data_t *data_ = (my_data_t*) (*data);
-    data_->level_index = -1;
     // FIXME: get the configured number of levels from pfasst
     int max = 0;
     for(int i=0; i<PF_MAXLEVS; i++) max = (local_prm.nx[i] > max) ? local_prm.nx[i] : max;
     data_->size = max;
-    data_->array = (double*) cpf_calloc_and_check(data_->size, sizeof(double));
+    data_->array = (double*) calloc_and_check(data_->size, sizeof(double));
     // setup initial condition
     exact(data_->array, data_->size, 0.0);
 }
@@ -30,12 +28,11 @@ void setup_initial_condition_cb(void** data) {
 void setup_final_condition_cb(void** data) {
     *data = malloc(sizeof(my_data_t));
     my_data_t *data_ = (my_data_t*) (*data);
-    data_->level_index = -1;
     // FIXME: get the configured number of levels from pfasst
     int max = 0;
     for(int i=0; i<PF_MAXLEVS; i++) max = (local_prm.nx[i] > max) ? local_prm.nx[i] : max;
     data_->size = max;
-    data_->array = (double*) cpf_calloc_and_check(data_->size, sizeof(double));
+    data_->array = (double*) calloc_and_check(data_->size, sizeof(double));
 }
 
 void run_pfasst() {
@@ -54,8 +51,6 @@ void run_pfasst() {
     int level = -1;
     cpf_hooks_t hook = PF_POST_ITERATION;
     cpf_add_echo_residual_hook(&level, &hook);
-    // void(*cb)(void*,int*) = &my_custom_hook;
-    // cpf_add_custom_hook(&level, &hook, &cb);
 
     // !> Allocate initial condition
     // !> Set the initial condition

@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <cpf_utils.h>
+#include "utils.h"
 #include "shared.h"
 
 bool try_parse_nml(char* line, char* name, char* format, void* storage) {
@@ -31,9 +31,9 @@ bool try_parse_nml_int_arr(char* line, char* name, int* storage, int max_length)
 }
 
 void load_local_parameters(char *fname) {
-    FILE *f;
-    if(!(f = fopen(fname, "r"))) {
-        cpf_stop("Cannot open input file");
+    FILE *f = fopen(fname, "r");
+    if(!f) {
+        stop("Cannot open input file %s", fname);
     }
 
     local_prm.v = 1.0;
@@ -66,9 +66,8 @@ void load_local_parameters(char *fname) {
     }
 
     fclose(f);
-    if (line)
-        free(line);
+    if (line) free(line);
 
-    // reset dt if Tfin is set
-    if (local_prm.Tfin > 0.0) local_prm.dt = local_prm.Tfin/local_prm.nsteps;
+    if (local_prm.Tfin > 0.0) local_prm.dt = local_prm.Tfin/local_prm.nsteps; // reset dt if Tfin is set
+    if (local_prm.ic_type != 1) stop("ic_type %d invalid or not implemented", local_prm.ic_type);
 }

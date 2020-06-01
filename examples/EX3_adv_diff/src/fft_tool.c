@@ -6,8 +6,8 @@
 #include <quadmath.h>
 #include <math.h>
 #include <assert.h>
-#include <cpf_utils.h>
 #include <fftpack.h>
+#include "utils.h"
 
 // helper function for Fortran syntax y[y1:y2] = x[x1:x2] (complex)
 void fvec_assign(complex double y[], int y1, int y2, complex double x[], int x1, int x2) {
@@ -23,18 +23,18 @@ void fft_setup(fft_tool_t *this, int nx, double Lx) {
     this->lensavx = 4*this->nx + 15;
     this->normfact = this->nx;
 
-    this->workhatx = (double complex*) cpf_calloc_and_check(this->nx, sizeof(double complex));
-    this->wsavex = (double*) cpf_calloc_and_check(this->lensavx, sizeof(double));
+    this->workhatx = (double complex*) calloc_and_check(this->nx, sizeof(double complex));
+    this->wsavex = (double*) calloc_and_check(this->lensavx, sizeof(double));
 
     this->Lx = Lx;
 
     // Initialize FFT
     cffti(this->nx, this->wsavex);
 
-    this->wk_1d = (double complex*) cpf_calloc_and_check(this->nx, sizeof(double complex));
+    this->wk_1d = (double complex*) calloc_and_check(this->nx, sizeof(double complex));
 
     // Assign wave numbers
-    this->kx = (double*) cpf_calloc_and_check(this->nx, sizeof(double));
+    this->kx = (double*) calloc_and_check(this->nx, sizeof(double));
     double twopi = (double) (M_PIq * 2.0Q);
     double om = twopi/this->Lx;
 

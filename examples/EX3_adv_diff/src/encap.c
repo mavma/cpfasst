@@ -7,7 +7,7 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-#include <cpf_utils.h>
+#include "utils.h"
 
 #include "shared.h"
 
@@ -15,10 +15,10 @@
 void factory_create_cb(void** data, int* level_index, int** lev_shape, int* lev_shape_len) {
     *data = malloc(sizeof(my_data_t));
     my_data_t *data_ = (my_data_t*) (*data);
-    data_->level_index = *level_index-1;
+    int level_index_ = *level_index - 1;
     // allocate 1D array
-    data_->size = local_prm.nx[data_->level_index];
-    data_->array = (double*) cpf_calloc_and_check(data_->size, sizeof(double));
+    data_->size = local_prm.nx[level_index_];
+    data_->array = (double*) calloc_and_check(data_->size, sizeof(double));
 }
 
 void factory_destroy_cb(void** data) {
@@ -43,11 +43,10 @@ void encap_copy_cb(void** dst, void** src, int* flags) {
 
 double encap_norm_cb(void** data, int* flags) {
     my_data_t *data_ = (my_data_t*) (*data);
-    // like LibPFASST's ndarray, we use the max norm
     double max = 0;
     for(int i = 0; i < data_->size; i++) {
         double abs = fabs(data_->array[i]);
-        max = abs > max ? abs : max;
+        max = (abs > max) ? abs : max;
     }
     return(max);
 }
@@ -56,14 +55,14 @@ void encap_axpy_cb(void** y, double* a, void** x, int* flags) {
     my_data_t *y_ = (my_data_t*) (*y);
     my_data_t *x_ = (my_data_t*) (*x);
     assert(y_->size == x_->size);
-    for(int i = 0; i < y_->size; i++) {
-        y_->array[i] += (*a) * x_->array[i];
-    }
+    if(*a == 0) return;
+    for(int i = 0; i < y_->size; i++) y_->array[i] += (*a) * x_->array[i];
 }
 
 void encap_eprint_cb(void** data, int* flags) {
     my_data_t *data_ = (my_data_t*) (*data);
-    for(int i = 0; i < data_->size; i++)
+    int nprint = (data_->size < 10) ? data_->size : 10;
+    for(int i = 0; i < nprint; i++)
         printf("  %.16E", data_->array[i]);
     printf("\n");
 }

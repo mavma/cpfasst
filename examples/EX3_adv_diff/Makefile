@@ -5,7 +5,7 @@ include $(cpfasst_dir)/common.mk
 main:
 
 build_dir = build
-obj = fft_tool.o sweeper.o encap.o hooks.o level.o probin.o shared.o solution.o main.o
+obj = fft_tool.o sweeper.o encap.o level.o probin.o shared.o solution.o utils.o main.o
 -include ${obj:%.o=${build_dir}/%.d}
 
 ccflags.local = -Ilibfftpack

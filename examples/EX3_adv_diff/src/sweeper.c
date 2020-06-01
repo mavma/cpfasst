@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <cpf_utils.h>
+#include "utils.h"
 #include "shared.h"
 #include "fft_tool.h"
 
@@ -12,11 +12,11 @@ void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit
     int nx = local_prm.nx[lev_idx]; // number of nodes at this level
 
     // allocate sweeper
-    my_sweeper_t *this = (my_sweeper_t*) cpf_calloc_and_check(1, sizeof(my_sweeper_t));
+    my_sweeper_t *this = (my_sweeper_t*) calloc_and_check(1, sizeof(my_sweeper_t));
     sweepers[lev_idx] = this;
 
     // allocate and initialize fft tool
-    this->fft_tool = (fft_tool_t*) cpf_calloc_and_check(1, sizeof(fft_tool_t));
+    this->fft_tool = (fft_tool_t*) calloc_and_check(1, sizeof(fft_tool_t));
     fft_setup(this->fft_tool, nx, local_prm.Lx);
 
     // define spectral derivative operators
@@ -25,9 +25,9 @@ void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit
     make_deriv_1d(this->fft_tool, ddx);
 
     // allocate operators
-    this->opE = (complex double*) cpf_calloc_and_check(nx, sizeof(complex double));
-    this->opI = (complex double*) cpf_calloc_and_check(nx, sizeof(complex double));
-    this->tmp = (complex double*) cpf_calloc_and_check(nx, sizeof(complex double));
+    this->opE = (complex double*) calloc_and_check(nx, sizeof(complex double));
+    this->opI = (complex double*) calloc_and_check(nx, sizeof(complex double));
+    this->tmp = (complex double*) calloc_and_check(nx, sizeof(complex double));
 
     // set variables and operators for explicit and implicit parts depending on imex_stat
     switch(local_prm.imex_stat) {
@@ -56,7 +56,7 @@ void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit
             }
             break;
         default:
-            cpf_stop("Invalid value for imex_stat");
+            stop("Invalid value for imex_stat");
     }
 
 }
@@ -88,7 +88,7 @@ void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int
             conv_1d(this->fft_tool, y_->array, this->opI, f_->array);
             break;
         default:
-            cpf_stop("Bad case for piece in f_eval");
+            stop("Bad case for piece in f_eval");
     }
     return;
 }
@@ -116,7 +116,7 @@ void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* l
             for(int i=0; i<y_->size; i++) f_->array[i] = (y_->array[i] - rhs_->array[i]) / *dtq;
             break;
         default:
-            cpf_stop("Bad case for piece in f_eval");
+            stop("Bad case for piece in f_eval");
     }
     return;
 }

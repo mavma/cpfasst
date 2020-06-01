@@ -1,3 +1,3 @@
 #pragma once
 
-void exact(double* out, int nx, double t);
+void exact(double* y, int nx, double t);
