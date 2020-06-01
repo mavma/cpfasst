@@ -3,22 +3,21 @@
 #include <string.h>
 #include <mpi.h>
 
-#include "cpf_interface.h"
-//#include "cpf_imex_sweeper.h"
+#include <cpf_interface.h>
+#include <cpf_imex_sweeper.h>
 
 #include "shared.h"
 //#include "hooks.h" // TODO: remove?
 #include "probin.h"
 
-local_prm_t local_prm;
 char fname[256] = "probin.nml";
 
 void run_pfasst() {
     load_local_parameters(fname);
     // !>  Set up communicator
-    cpf_mpi_create();
+    //cpf_mpi_create();
     // !>  Create the pfasst structure
-    cpf_pfasst_create(local_prm.pfasst_nml);
+    //cpf_pfasst_create(local_prm.pfasst_nml);
 //    // !> Loop over levels and set some level specific parameters
 //    size_t data_size = sizeof(custom_data_t);
 //    cpf_user_obj_allocate(&data_size);

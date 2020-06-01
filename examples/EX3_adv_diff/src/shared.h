@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cpf_static.h>
+#include <stddef.h>
 #include "fft_tool.h"
 
-// 1D array
 typedef struct my_data_struct {
     double *array;
     size_t size;

@@ -1,10 +1,11 @@
 #include <cpf_level.h>
 
 #include <string.h>
+#include <assert.h>
 #include "shared.h"
 #include "fft_tool.h"
 
-inline void level_interpolate(int f_idx, int c_idx, my_data_t* f_data, my_data_t* c_data) {
+void level_interpolate(int f_idx, int c_idx, my_data_t* f_data, my_data_t* c_data) {
     fft_tool_t *fft_f = sweepers[f_idx]->fft_tool;
     fft_tool_t *fft_c = sweepers[c_idx]->fft_tool;
     int irat  = f_data->size / c_data->size;
@@ -22,7 +23,7 @@ inline void level_interpolate(int f_idx, int c_idx, my_data_t* f_data, my_data_t
     }
 }
 
-inline void level_restrict(my_data_t* f_data, my_data_t* c_data) {
+void level_restrict(my_data_t* f_data, my_data_t* c_data) {
     int irat  = f_data->size / c_data->size;
     assert(f_data->size == irat * c_data->size);
 

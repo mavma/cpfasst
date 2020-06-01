@@ -1,7 +1,7 @@
 cpfasst:
 
 build_dir = build
-obj = cpf_encap.o cpf_imex_sweeper.o cpf_level.o cpf_interface.o
+obj = cpf_encap.o cpf_imex_sweeper.o cpf_level.o cpf_interface.o cpf_utils.o
 -include ${obj:%.o=${build_dir}/%.d}
 
 include common.mk

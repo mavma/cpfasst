@@ -1,7 +1,6 @@
 // This is a rudimentary nml parser, used to facilitate running the cpfasst examples with the
 // same problem-specific parameters as their LibPFASST counterparts for testing. When adapting
-// the example for a different use, any type of parser (xml, command line, fixed parameters, etc)
-// may be substituted.
+// the example for a different use, it's recommended to replace nml input by a C-friendly format
 
 #include "probin.h"
 
@@ -30,6 +29,7 @@ void load_local_parameters(char *fname) {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    int nx_pos;
     while((read = getline(&line, &len, f)) != EOF) {
         if(sscanf(line, " v = %lf", &local_prm.v) == 1) continue;
         else if(sscanf(line, " nu = %lf", &local_prm.nu) == 1) continue;
@@ -41,6 +41,10 @@ void load_local_parameters(char *fname) {
         else if(sscanf(line, " imex_stat = %d", &local_prm.imex_stat) == 1) continue;
         else if(sscanf(line, " ic_type = %d", &local_prm.ic_type) == 1) continue;
         else if(sscanf(line, " pfasst_nml = %s", local_prm.pfasst_nml) == 1) continue;
+        else if(sscanf(line, " nx =%n", nx_pos) == 1) {
+            int i = 0;
+            do i++; while(sscanf(&line[nx_pos], " %d%n", local_prm.nx[i], nx_pos) == 2);
+        }
     }
 
     int nx[PF_MAXLEVS];     // number of grid points
