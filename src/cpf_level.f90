@@ -4,17 +4,17 @@ module cpf_level
     use iso_c_binding
 
     interface
-        subroutine level_interpolate_cb(f_lev_idx, c_lev_idx, f_vec, c_vec, t, flags) bind(C)
+        subroutine level_interpolate_cb(f_level_index, c_level_index, f_data, c_data, t, flags) bind(C)
             import :: c_double, c_int, c_ptr
-            integer(c_int)  :: f_lev_idx, c_lev_idx
-            type(c_ptr)     :: f_vec, c_vec
+            integer(c_int)  :: f_level_index, c_level_index
+            type(c_ptr)     :: f_data, c_data
             real(c_double)  :: t
             integer(c_int)  :: flags
         end subroutine
-        subroutine level_restrict_cb(f_lev_idx, c_lev_idx, f_vec, c_vec, t, flags) bind(C)
+        subroutine level_restrict_cb(f_level_index, c_level_index, f_data, c_data, t, flags) bind(C)
             import :: c_double, c_int, c_ptr
-            integer(c_int)  :: f_lev_idx, c_lev_idx
-            type(c_ptr)     :: f_vec, c_vec
+            integer(c_int)  :: f_level_index, c_level_index
+            type(c_ptr)     :: f_data, c_data
             real(c_double)  :: t
             integer(c_int)  :: flags
         end subroutine
