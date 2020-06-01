@@ -6,13 +6,34 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
+#include <cpf_utils.h>
 #include "shared.h"
+
+bool try_parse_nml(char* line, char* name, char* format, void* storage) {
+    char format_tmp[64];
+    sprintf(format_tmp, " %s = %%%s", name, format);
+    if(sscanf(line, format_tmp, storage) == 1) return true;
+    else return false;
+}
+
+bool try_parse_nml_int_arr(char* line, char* name, int* storage, int max_length) {
+    char format_tmp[64];
+    sprintf(format_tmp, " %s = %%d%%n", name);
+    int read, pos = 0;
+    if (sscanf(line, format_tmp, &storage[0], &read) != 1) return false;
+    for (int i = 1; i < max_length; i++) {
+        pos += read;
+        if (sscanf(&line[pos], " %d%n", &storage[i], &read) != 1) break;
+    }
+    return true;
+}
 
 void load_local_parameters(char *fname) {
     FILE *f;
     if(!(f = fopen(fname, "r"))) {
-        printf("Error opening input file %s\n", fname); exit(EXIT_FAILURE);
+        cpf_stop("Cannot open input file");
     }
 
     local_prm.v = 1.0;
@@ -31,26 +52,18 @@ void load_local_parameters(char *fname) {
     ssize_t read;
     int nx_pos;
     while((read = getline(&line, &len, f)) != EOF) {
-        if(sscanf(line, " v = %lf", &local_prm.v) == 1) continue;
-        else if(sscanf(line, " nu = %lf", &local_prm.nu) == 1) continue;
-        else if(sscanf(line, " kfreq = %lf", &local_prm.kfreq) == 1) continue;
-        else if(sscanf(line, " dt = %lf", &local_prm.dt) == 1) continue;
-        else if(sscanf(line, " Tfin = %lf", &local_prm.Tfin) == 1) continue;
-        else if(sscanf(line, " Lx = %lf", &local_prm.Lx) == 1) continue;
-        else if(sscanf(line, " nsteps = %d", &local_prm.nsteps) == 1) continue;
-        else if(sscanf(line, " imex_stat = %d", &local_prm.imex_stat) == 1) continue;
-        else if(sscanf(line, " ic_type = %d", &local_prm.ic_type) == 1) continue;
-        else if(sscanf(line, " pfasst_nml = %s", local_prm.pfasst_nml) == 1) continue;
-        else if(sscanf(line, " nx =%n", nx_pos) == 1) {
-            int i = 0;
-            do i++; while(sscanf(&line[nx_pos], " %d%n", local_prm.nx[i], nx_pos) == 2);
-        }
+        if(try_parse_nml(line, "v", "lf", &local_prm.v)) continue;
+        else if(try_parse_nml(line, "nu", "lf", &local_prm.nu)) continue;
+        else if(try_parse_nml(line, "kfreq", "lf", &local_prm.kfreq)) continue;
+        else if(try_parse_nml(line, "dt", "lf", &local_prm.dt)) continue;
+        else if(try_parse_nml(line, "Tfin", "lf", &local_prm.Tfin)) continue;
+        else if(try_parse_nml(line, "Lx", "lf", &local_prm.Lx)) continue;
+        else if(try_parse_nml(line, "nsteps", "d", &local_prm.nsteps)) continue;
+        else if(try_parse_nml(line, "imex_stat", "d", &local_prm.imex_stat)) continue;
+        else if(try_parse_nml(line, "ic_type", "d", &local_prm.ic_type)) continue;
+        else if(try_parse_nml(line, "pfasst_nml", "s", &local_prm.pfasst_nml)) continue;
+        else if(try_parse_nml_int_arr(line, "nx", local_prm.nx, PF_MAXLEVS)) continue;
     }
-
-    int nx[PF_MAXLEVS];     // number of grid points
-
-
-
 
     fclose(f);
     if (line)

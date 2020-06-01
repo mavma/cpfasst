@@ -28,15 +28,21 @@ libpfasst_examples: | libpfasst
 	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
-all: libpfasst cpfasst libpfasst_examples
+examples: | cpfasst libpfasst
+	cd examples/EX2_Dahlquist; $(MAKE)
+	cd examples/EX3_adv_diff; $(MAKE)
+
+all: cpfasst examples libpfasst libpfasst_examples
 
 clean:
 	\rm -r build
 
 clean_all: clean
+	cd examples/EX2_Dahlquist; $(MAKE) clean
+	cd examples/EX3_adv_diff; $(MAKE) clean
 	cd LibPFASST; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) clean
 
-.PHONY: clean all cpfasst libpfasst libpfasst_examples clean_all
+.PHONY: clean all cpfasst libpfasst libpfasst_examples clean_all examples
