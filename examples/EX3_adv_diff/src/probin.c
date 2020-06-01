@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "local.h"
+#include "shared.h"
 
 void load_local_parameters(char *fname) {
     FILE *f;

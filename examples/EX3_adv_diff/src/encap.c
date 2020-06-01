@@ -8,7 +8,7 @@
 #include <math.h>
 #include <assert.h>
 
-#include "local.h"
+#include "shared.h"
 
 void factory_create_cb(void** data, int* level_index, int** lev_shape, int* lev_shape_len) {
     *data = malloc(sizeof(my_data_t));

@@ -6,7 +6,7 @@
 #include "cpf_interface.h"
 //#include "cpf_imex_sweeper.h"
 
-#include "local.h"
+#include "shared.h"
 //#include "hooks.h" // TODO: remove?
 #include "probin.h"
 

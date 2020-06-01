@@ -1,29 +1,32 @@
-SRC = fftpack.c sweeper.c encap.c hooks.c level.c probin.c main.c
-BUILDDIR = build
-SRCDIR = src
+cpfasst_dir ?= ../..
+libpfasst_dir ?= $(cpfasst_dir)/LibPFASST
+include $(cpfasst_dir)/common.mk
 
-CPFASST ?= ../..
-LIBPFASST ?= $(CPFASST)/LibPFASST
+main:
 
-include $(CPFASST)/common.mk
+build_dir = build
+obj = fftpack.o sweeper.o encap.o hooks.o level.o probin.o main.o
+-include ${obj:%.o=${build_dir}/%.d}
 
-CFLAGS += -Ilibfftpack
-CLDFLAGS += -Llibfftpack -lfftpack
+main: $(addprefix $(build_dir)/,$(obj)) Makefile | $(build_dir)
+	$(CC) -o $@ $(filter-out Makefile,$^) $(CLDFLAGS) $(FMPIFLAGS)
 
-OBJ  = $(addprefix $(BUILDDIR)/,$(SRC:.c=.o))
+$(build_dir):
+	@mkdir $@
 
-main: $(OBJ)
-	$(CC) -o $@ $^ $(CLDFLAGS) $(FMPIFLAGS)
-
-$(BUILDDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(BUILDDIR)
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-$(OBJ) : cpfasst
+$(build_dir)/%.o: src/%.c Makefile | $(build_dir) cpfasst libfftpack
+	$(CC) -c -o $@ -MD -MP $(CFLAGS) $<
 
 cpfasst:
 	cd ../..; $(MAKE)
 
+libfftpack:
+	cd libfftpack; $(MAKE)
+
+all: main
+
 clean:
-	\rm main
-	\rm -r build
+	\rm -f main
+	\rm -rf build
+
+.PHONY: clean all cpfasst libfftpack

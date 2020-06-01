@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <cpf_imex_sweeper.h>
 #include <cpf_utils.h>
-#include "local.h"
+#include "shared.h"
 #include "fft_tool.h"
 
 void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit) {
