@@ -7,6 +7,8 @@ CC = $(MPI_BIN)/mpicc
 FC = $(MPI_BIN)/mpif90
 AR = ar rcs
 
+GCC10 ?= TRUE # enables gcc10-only flag to allow compiling LibPFASST
+
 DEBUG = TRUE
 
 # C compiler & linker flags

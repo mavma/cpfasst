@@ -21,7 +21,7 @@ $(build_dir)/%.o: src/%.c Makefile | $(build_dir) libpfasst
 	$(CC) -c -o $@ -MD -MP $(CFLAGS) $<
 
 libpfasst:
-	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC) GCC10=$(GCC10)
 
 libpfasst_examples: | libpfasst
 	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
