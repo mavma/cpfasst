@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tutorial: ["EX2_Dahlquist"]
+        tutorial: ["EX2_Dahlquist" "EX3_adv_diff"]
         mpi_bin: ["/usr/bin/"]
     steps:
       - uses: actions/checkout@v2
@@ -33,4 +33,4 @@ jobs:
       - name: Test
         run: |
           make MPI_BIN=${{ matrix.mpi_bin }} -C LibPFASST/Tutorials/${{ matrix.tutorial }}
-          ./tests/ex2_test.sh
+          ./tests/test_example.sh ${{ matrix.tutorial }}

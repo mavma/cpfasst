@@ -9,7 +9,7 @@
 #   -q: Quiet mode
 #   exname: Name of the example, e.g. 'EX2_Dahlquist'
 
-set -e
+set -ex
 
 np=1; run_lpf=false; inputs=("probin" "sdc" "multi_level" "pipeline"); output="/dev/stdout";
 while getopts ":n:i:bq" opt; do
