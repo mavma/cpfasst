@@ -7,7 +7,7 @@
 #   Requires the example to be built in cpfasst and LibPFASST
 #   Assumes example output folder = dat/outdirP0001
 
-set -ex
+set -e
 
 EXAMPLE=$1
 RUN="./tests/run_example.sh"

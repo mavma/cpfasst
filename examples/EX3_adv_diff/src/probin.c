@@ -49,7 +49,7 @@ void load_local_parameters(char *fname) {
 
     char *line = NULL;
     size_t len = 0;
-    ssize_t read;
+    size_t read;
     int nx_pos;
     while((read = getline(&line, &len, f)) != EOF) {
         if(try_parse_nml(line, "v", "lf", &local_prm.v)) continue;

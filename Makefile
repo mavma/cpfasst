@@ -1,7 +1,7 @@
 include common.mk
 
 build_dir = build
-obj = cpf_encap.o cpf_imex_sweeper.o cpf_level.o cpf_parameters.o cpf_interface.o
+obj = cpf_utils.o cpf_encap.o cpf_imex_sweeper.o cpf_level.o cpf_parameters.o cpf_interface.o
 
 cpfasst: $(build_dir)/libcpfasst.a
 

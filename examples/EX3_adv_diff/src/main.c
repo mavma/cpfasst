@@ -5,6 +5,7 @@
 
 #include <cpf_interface.h>
 #include <cpf_imex_sweeper.h>
+#include <cpf_parameters.h>
 #include "utils.h"
 
 #include "shared.h"
@@ -41,6 +42,12 @@ void run_pfasst() {
     cpf_mpi_create();
     // !>  Create the pfasst structure
     cpf_pfasst_create(local_prm.pfasst_nml);
+    // get parameters
+    cpf_parameter_t prms, *prms_p = &prms;
+    cpf_get_parameters(&prms_p);
+    // set a parameter to show we can
+    prms_p.
+    cpf_set_parameters(&prms_p);
     // !> Loop over levels and set some level specific parameters
     size_t data_size = 512*sizeof(double); //FIXME
     cpf_user_obj_allocate(&data_size);
