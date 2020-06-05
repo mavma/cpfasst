@@ -1,29 +1,50 @@
+! Interoperable routines to be called by user code
 module cpfasst
-    use pfasst            !< This module has include statements for the main pfasst routines
-    use pf_mod_mpi
-    use cpf_level
-    use cpf_encap
-    use cpf_imex_sweeper
+    use cpf_run
     use cpf_parameters
+    use cpf_utils
     use iso_c_binding
-
-    interface
-        subroutine setup_initial_condition_cb(data) bind(C)
-            import :: c_ptr
-            type(c_ptr),    intent(out) :: data
-        end subroutine
-        subroutine setup_final_condition_cb(data) bind(C)
-            import :: c_ptr
-            type(c_ptr),    intent(out) :: data
-        end subroutine
-    end interface
-
-    type(pf_pfasst_t) :: pf  !<  the main pfasst structure
-    type(pf_comm_t)   :: comm    !<  the communicator (here it is mpi)
-    type(cpf_encap_t)   :: y_0      !<  the initial condition
-    type(cpf_encap_t)   :: y_end      !<  the initial condition
+    implicit none
 
 contains
+
+    ! C interfaces for cpf_run subroutines
+
+    subroutine cpf_initialize_from_nml(path) bind(C)
+        character(c_char), intent(in) :: path(256)
+        character(256) :: f_path
+        call c_f_string(path, f_path)
+        call initialize(path=f_path)
+    end subroutine cpf_initialize_from_nml
+
+    subroutine cpf_initialize_default(nlevels) bind(C)
+        integer(c_int), intent(in) :: nlevels
+        call initialize(nlevels=nlevels)
+    end subroutine cpf_initialize_default
+
+    subroutine cpf_allocate_level(level_index, data_size) bind(C)
+        integer(c_int), intent(in) :: level_index
+        integer(c_int), intent(in) :: data_size
+        call allocate_level(level_index, data_size)
+    end subroutine cpf_allocate_level
+
+    subroutine cpf_run_tend(dt, tend) bind(C)
+        real(c_double), intent(inout) :: dt
+        real(c_double), intent(in) :: tend
+        call run(dt, tend=tend)
+    end subroutine cpf_run_tend
+
+    subroutine cpf_run_nsteps(dt, nsteps) bind(C)
+        real(c_double), intent(inout) :: dt
+        integer(c_int), intent(in) :: nsteps
+        call run(dt, nsteps=nsteps)
+    end subroutine cpf_run_nsteps
+
+    subroutine cpf_destroy() bind(C)
+        call destroy()
+    end subroutine cpf_destroy
+
+    ! Getters/setters for cpf_run variables
 
     subroutine cpf_set_parameters(param) bind(C)
         type(c_ptr), intent(inout) :: param
@@ -39,46 +60,12 @@ contains
         call get_parameters(pf, param_fptr)
     end subroutine cpf_get_parameters
 
-    subroutine cpf_mpi_create() bind(C)
-        call pf_mpi_create(comm, MPI_COMM_WORLD)
-    end subroutine cpf_mpi_create
+    subroutine cpf_set_ic(data) bind(C)
+        type(c_ptr) :: data
+        y_0%data = data
+    end subroutine cpf_set_ic
 
-    !> Create a PFASST object
-    subroutine cpf_pfasst_create(fname) bind(C)
-        character(c_char), intent(in) :: fname(256)
-        character(256) :: pf_fname
-        pf_fname = transfer(fname, pf_fname)
-        call pf_pfasst_create(pf, comm, fname=pf_fname)
-    end subroutine cpf_pfasst_create
-
-    subroutine cpf_user_obj_allocate(data_size) bind(C)
-        integer(c_int), intent(in) :: data_size
-        integer :: l !!  Level loop index
-        integer :: mpibuflen
-        ! real(pfdp), allocatable :: foo(:)
-
-        mpibuflen = data_size / sizeof(pfdp)
-        if (mod(data_size, sizeof(pfdp)) /= 0) then
-            mpibuflen = mpibuflen + 1 ! round up
-        end if
-
-        ! allocate(foo(300))
-
-        do l = 1, pf%nlevels
-            !>  Allocate the user specific level object
-            allocate(cpf_level_t::pf%levels(l)%ulevel)
-            !>  Allocate the user specific data constructor
-            allocate(cpf_factory::pf%levels(l)%ulevel%factory)
-            !>  Add the sweeper to the level
-            allocate(cpf_imex_sweeper_t::pf%levels(l)%ulevel%sweeper)
-            !>  Set the size of the data and mpi buffer length on this level
-            call pf_level_set_size(pf,l,[1],mpibuflen)
-        end do
-    end subroutine cpf_user_obj_allocate
-
-    subroutine cpf_pfasst_setup() bind(C)
-        call pf_pfasst_setup(pf)
-    end subroutine cpf_pfasst_setup
+    ! Optional interfaces
 
     subroutine cpf_add_custom_hook(level_index, hook, c_fun) bind(C)
         integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
@@ -95,23 +82,5 @@ contains
         integer(c_int),    intent(in)    :: hook          !! which hook to add
         call pf_add_hook(pf, level_index, hook, pf_echo_residual)
     end subroutine cpf_add_echo_residual_hook
-
-    subroutine cpf_setup_ic() bind(C)
-        call setup_initial_condition_cb(y_0%data)
-        call setup_final_condition_cb(y_end%data)
-    end subroutine cpf_setup_ic
-
-    subroutine cpf_pfasst_run(dt, tend, nsteps) bind(C)
-        real(c_double),    intent(inout)           :: dt   !!  The time step for each processor
-        real(c_double),    intent(in   )           :: tend !!  The final time of run
-        integer(c_int),    intent(in   ), optional :: nsteps  !!  The number of time steps
-        call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps, y_end)
-    end subroutine cpf_pfasst_run
-
-    subroutine cpf_cleanup() bind(C)
-        call cpf_encap_destroy(y_0)
-        call cpf_encap_destroy(y_end)
-        call pf_pfasst_destroy(pf)
-    end subroutine cpf_cleanup
 
 end module cpfasst

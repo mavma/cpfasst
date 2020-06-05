@@ -17,7 +17,7 @@ module cpf_encap
 
     !>  Type to extend the abstract encap and set procedure pointers
     type, extends(pf_encap_t) :: cpf_encap_t
-        type(c_ptr) :: data ! C pointer to encapsulated data
+        type(c_ptr) :: data = C_NULL_PTR ! C pointer to encapsulated data
     contains
         procedure :: setval => cpf_setval
         procedure :: copy => cpf_copy
@@ -75,7 +75,7 @@ module cpf_encap
 
 contains
 
-    !>  Helper subroutine to allocate data for cpf_encap_t
+    ! Allocate data for cpf_encap_t
     subroutine cpf_encap_build(encap, level_index, lev_shape)
         class(pf_encap_t),     intent(inout) ::  encap
         integer,               intent(in   ) ::  level_index
@@ -86,7 +86,7 @@ contains
         end select
     end subroutine cpf_encap_build
 
-    !>  Subroutine to allocate one encap
+    ! Allocate one encap
     subroutine cpf_create_single(this, x, level_index, lev_shape)
         class(cpf_factory),    intent(inout)              :: this
         class(pf_encap_t),     intent(inout), allocatable :: x
@@ -98,7 +98,7 @@ contains
         call cpf_encap_build(x, level_index, lev_shape)
     end subroutine cpf_create_single
 
-    !> Subroutine to create an array of encaps
+    ! Create an array of encaps
     subroutine cpf_create_array(this, x, n, level_index,lev_shape)
         class(cpf_factory),    intent(inout)              :: this
         class(pf_encap_t),     intent(inout), allocatable :: x(:)
@@ -113,7 +113,7 @@ contains
         end do
     end subroutine cpf_create_array
 
-    !>  Helper subroutine to deallocate encapsulated cpf_encap_t
+    ! Deallocate encapsulated cpf_encap_t
     subroutine cpf_encap_destroy(encap)
         class(pf_encap_t),     intent(inout) ::  encap
         select type (encap)
@@ -122,7 +122,7 @@ contains
         end select
     end subroutine cpf_encap_destroy
 
-    !> Subroutine to destroy a single array encap
+    ! Destroy a single encap
     subroutine cpf_destroy_single(this, x)
         class(cpf_factory),     intent(inout)              :: this
         class(pf_encap_t),      intent(inout), allocatable :: x
@@ -130,7 +130,7 @@ contains
         deallocate(x)
     end subroutine cpf_destroy_single
 
-    !> Subroutine to destroy an array of arrays
+    ! Destroy an array of encaps
     subroutine cpf_destroy_array(this, x)
         class(cpf_factory),     intent(inout)              :: this
         class(pf_encap_t),      intent(inout), allocatable :: x(:)
@@ -141,7 +141,7 @@ contains
         deallocate(x)
     end subroutine cpf_destroy_array
 
-    !> Subroutine to set array to a scalar  value.
+    ! Set array to a scalar  value.
     subroutine cpf_setval(this, val, flags)
         class(cpf_encap_t), intent(inout)           :: this
         real(pfdp),         intent(in)              :: val
@@ -149,7 +149,7 @@ contains
         call encap_setval_cb(this%data, val, flags)
     end subroutine cpf_setval
 
-    !> Subroutine to copy an array
+    ! Copy an array
     subroutine cpf_copy(this, src, flags)
         class(cpf_encap_t), intent(inout)           :: this
         class(pf_encap_t),  intent(in)              :: src
@@ -162,7 +162,7 @@ contains
         end select
     end subroutine cpf_copy
 
-    !> Subroutine to pack into a flat array for sending
+    ! Pack into a flat array for sending
     subroutine cpf_pack(this, z, flags)
         class(cpf_encap_t), intent(in)              :: this
         real(pfdp),         intent(out)             :: z(:)
@@ -172,7 +172,7 @@ contains
         z = fptr
     end subroutine cpf_pack
 
-    !> Subroutine to unpack  after receiving
+    ! Unpack  after receiving
     subroutine cpf_unpack(this, z, flags)
         class(cpf_encap_t), intent(inout)           :: this
         real(pfdp),         intent(in)              :: z(:)
@@ -182,7 +182,7 @@ contains
         fptr = z
     end subroutine cpf_unpack
 
-    !> Subroutine to define the norm of the array (here the abs value)
+    ! Calculate the norm of the encap
     function cpf_norm(this, flags) result (norm)
         class(cpf_encap_t), intent(in   ) :: this
         integer,     intent(in   ), optional :: flags
@@ -190,7 +190,7 @@ contains
         norm = encap_norm_cb(this%data, flags)
     end function cpf_norm
 
-    !> Subroutine to compute y = a x + y where a is a scalar and x and y are arrays
+    ! Compute y = a x + y where a is a scalar and x and y are encaps
     subroutine cpf_axpy(this, a, x, flags)
         class(cpf_encap_t), intent(inout)           :: this
         class(pf_encap_t),  intent(in   )           :: x
@@ -204,14 +204,14 @@ contains
         end select
     end subroutine cpf_axpy
 
-    !>  Subroutine to print the array to the screen (mainly for debugging purposes)
+    ! Print the array to the screen (mainly for debugging purposes)
     subroutine cpf_eprint(this,flags)
         class(cpf_encap_t), intent(inout) :: this
         integer,           intent(in   ), optional :: flags
         call encap_eprint_cb(this%data, flags)
     end subroutine cpf_eprint
 
-    !  Helper function to cast an abstract encap to the cpf_encap_t
+    ! Cast an abstract encap to cpf_encap_t
     function cast_as_cpf(encap_polymorph) result(cpf_obj)
         class(pf_encap_t), intent(in), target :: encap_polymorph
         type(cpf_encap_t), pointer :: cpf_obj
