@@ -25,7 +25,7 @@ jobs:
       - name: Compile
         run: |
           cd examples/${{ matrix.tutorial }}
-          make MPI_BIN=${{ matrix.mpi_bin }} GCC10=TRUE
+          make MPI_BIN=${{ matrix.mpi_bin }} GCC10=FALSE
       - name: Run sequential
         run: ./tests/run_example.sh EX2_Dahlquist
       - name: Run parallel
