@@ -5,6 +5,7 @@ MPI_BIN ?= /opt/mpich/bin
 
 CC = $(MPI_BIN)/mpicc
 FC = $(MPI_BIN)/mpif90
+LD = $(MPI_BIN)/mpicc
 AR = ar rcs
 
 GCC10 ?= TRUE # enables gcc10-only flag to allow compiling LibPFASST
@@ -31,3 +32,18 @@ ifeq ($(DEBUG),TRUE)
 CFLAGS += -g -O0
 FFLAGS += -g -O0
 endif
+
+# control verbosity
+V ?= 0
+ifeq ($(V),0)
+	CC_MSG = @echo "Compiling $<...";
+	LD_MSG = @echo "Linking $<...";
+	AR_MSG = @echo "Creating archive $@...";
+endif
+CCv = $(CC_MSG)$(CC)
+FCv = $(CC_MSG)$(FC)
+LDv = $(LD_MSG)$(LD)
+ARv = $(AR_MSG)$(AR)
+
+$(info $$V is [${V}])
+$(info $$CCv is [${CCv}])
