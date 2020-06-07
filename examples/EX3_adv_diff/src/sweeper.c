@@ -7,13 +7,12 @@
 #include "shared.h"
 #include "fft_tool.h"
 
-void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit) {
-    int lev_idx = *level_index - 1; // zero-indexed level
-    int nx = ex3_prm.nx[lev_idx]; // number of nodes at this level
+void cpf_imex_sweeper_initialize_cb(int level_index, bool* explicit, bool* implicit) {
+    int nx = ex3_prm.nx[level_index-1]; // number of nodes at this level
 
     // allocate sweeper
     ex3_sweeper_t *this = (ex3_sweeper_t*) calloc_and_check(1, sizeof(ex3_sweeper_t));
-    sweepers[lev_idx] = this;
+    sweepers[level_index-1] = this;
 
     // allocate and initialize fft tool
     this->fft_tool = (fft_tool_t*) calloc_and_check(1, sizeof(fft_tool_t));
@@ -58,11 +57,10 @@ void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit
         default:
             stop("Invalid value for imex_stat");
     }
-
 }
 
-void imex_sweeper_destroy_cb(int* level_index) {
-    ex3_sweeper_t *this = sweepers[*level_index - 1];
+void cpf_imex_sweeper_destroy_cb(int level_index) {
+    ex3_sweeper_t *this = sweepers[level_index-1];
 
     // destroy and deallocate fft tool
     fft_destroy(this->fft_tool);
@@ -75,12 +73,12 @@ void imex_sweeper_destroy_cb(int* level_index) {
     free(this);
 }
 
-void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
-    ex3_sweeper_t *this = sweepers[*level_index - 1];
-    ex3_data_t *y_ = (ex3_data_t*) (*y);
-    ex3_data_t *f_ = (ex3_data_t*) (*f);
+void cpf_imex_sweeper_f_eval_cb(user_data_t* y, double t, int level_index, user_data_t* f, int piece) {
+    ex3_sweeper_t *this = sweepers[level_index-1];
+    ex3_data_t *y_ = (ex3_data_t*) y;
+    ex3_data_t *f_ = (ex3_data_t*) f;
 
-    switch(*piece) {
+    switch(piece) {
         case 1: // Explicit piece
             conv_1d(this->fft_tool, y_->array, this->opE, f_->array);
             break;
@@ -93,14 +91,14 @@ void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int
     return;
 }
 
-void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
-    ex3_sweeper_t *this = sweepers[*level_index - 1];
-    ex3_data_t *y_ = (ex3_data_t*) (*y);
-    ex3_data_t *f_ = (ex3_data_t*) (*f);
-    ex3_data_t *rhs_ = (ex3_data_t*) (*rhs);
+void cpf_imex_sweeper_f_comp_cb(user_data_t* y, double t, double dtq, user_data_t* rhs, int level_index, user_data_t* f) {
+    ex3_sweeper_t *this = sweepers[level_index-1];
+    ex3_data_t *y_ = (ex3_data_t*) y;
+    ex3_data_t *f_ = (ex3_data_t*) f;
+    ex3_data_t *rhs_ = (ex3_data_t*) rhs;
 
     if(ex3_prm.imex_stat == 0) {
-        printf("cpfasst: We should not be calling fcomp for fully explicit");
+        // fully explicit
         for(int i=0; i<y_->nx; i++) {
             y_->array[i] = rhs_->array[i];
             f_->array[i] = 0;
@@ -108,15 +106,10 @@ void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* l
         return;
     }
 
-    switch(*piece) {
-        case 2:
-            // Apply the inverse operator with the FFT convolution
-            for(int i=0; i<y_->nx; i++) this->tmp[i] = 1.0/(1.0 - (*dtq)*this->opI[i]);
-            conv_1d(this->fft_tool, rhs_->array, this->tmp, y_->array);
-            for(int i=0; i<y_->nx; i++) f_->array[i] = (y_->array[i] - rhs_->array[i]) / *dtq;
-            break;
-        default:
-            stop("Bad case for piece in f_eval");
-    }
+    // Apply the inverse operator with the FFT convolution
+    for(int i=0; i<y_->nx; i++) this->tmp[i] = 1.0/(1.0 - dtq*this->opI[i]);
+    conv_1d(this->fft_tool, rhs_->array, this->tmp, y_->array);
+    for(int i=0; i<y_->nx; i++) f_->array[i] = (y_->array[i] - rhs_->array[i]) / dtq;
+
     return;
 }

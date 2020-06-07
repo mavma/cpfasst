@@ -53,20 +53,20 @@ module cpf_encap
     type, extends(pf_factory_t) :: cpf_factory
     contains
         procedure :: create_single  => cpf_factory_create_single
-        procedure :: create_array  => cpf_factory_create_array
+        procedure :: create_array   => cpf_factory_create_array
         procedure :: destroy_single => cpf_factory_destroy_single
-        procedure :: destroy_array => cpf_factory_destroy_array
+        procedure :: destroy_array  => cpf_factory_destroy_array
     end type cpf_factory
 
     type, extends(pf_encap_t) :: cpf_encap_t
         type(c_ptr) :: data = C_NULL_PTR ! C pointer to encapsulated data
     contains
         procedure :: setval => cpf_encap_setval
-        procedure :: copy => cpf_encap_copy
-        procedure :: norm => cpf_encap_norm
-        procedure :: pack => cpf_encap_pack
+        procedure :: copy   => cpf_encap_copy
+        procedure :: norm   => cpf_encap_norm
+        procedure :: pack   => cpf_encap_pack
         procedure :: unpack => cpf_encap_unpack
-        procedure :: axpy => cpf_encap_axpy
+        procedure :: axpy   => cpf_encap_axpy
         procedure :: eprint => cpf_encap_eprint
     end type cpf_encap_t
 
