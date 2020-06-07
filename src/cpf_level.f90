@@ -43,8 +43,8 @@ contains
         class(cpf_encap_t), pointer :: y_f, y_c
 
         !>  Cast the abstract encap as my data type
-        y_f => cast_as_cpf(f_vec)
-        y_c => cast_as_cpf(c_vec)
+        y_f => cast_to_cpf_encap(f_vec)
+        y_c => cast_to_cpf_encap(c_vec)
 
         call level_interpolate_cb(f_lev%index, c_lev%index, y_f%data, y_c%data, t, flags)
     end subroutine interpolate
@@ -60,8 +60,8 @@ contains
         class(cpf_encap_t), pointer :: y_f, y_c
 
         !>  Cast the abstract encap as my data type
-        y_f => cast_as_cpf(f_vec)
-        y_c => cast_as_cpf(c_vec)
+        y_f => cast_to_cpf_encap(f_vec)
+        y_c => cast_to_cpf_encap(c_vec)
 
         call level_restrict_cb(f_lev%index, c_lev%index, y_f%data, y_c%data, t, flags)
     end subroutine restrict

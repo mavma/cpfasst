@@ -28,16 +28,18 @@ contains
         c_string(len_trim(f_string)+1) = C_NULL_CHAR
     end subroutine f_c_string
 
-    subroutine oops(file, line, msg)
+    subroutine oops(file, line, msg, err)
         use iso_fortran_env, only: error_unit
-        character(len=*), intent(in) :: file
-        integer,          intent(in) :: line
-        character(len=*), intent(in) :: msg
+        character(len=*), intent(in)           :: file
+        integer,          intent(in)           :: line
+        character(len=*), intent(in)           :: msg
+        integer,          intent(in), optional :: err
 
         write(error_unit,*) 'Error in CPFASST interface'
         write(error_unit,*) 'File: ', file
         write(error_unit,*) 'Line: ', line
-        write(error_unit,*) msg
+        write(error_unit,*) trim(msg)
+        if(present(err)) write(error_unit,*) 'Error code:', err
         call exit(-1)
     end subroutine oops
 end module cpf_utils

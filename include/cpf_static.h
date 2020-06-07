@@ -24,5 +24,5 @@ typedef enum {
     PF_POST_ALL          = 17
 } cpf_hooks_t;
 
-// User encapsulated data type definition for interface readability
-typedef void user_encap_t;
+// User data typedef to aid in readability of callback declarations
+typedef void user_data_t;

@@ -2,6 +2,7 @@ module cpf_imex_sweeper
     use pf_mod_imex_sweeper
     use cpf_encap
     use iso_c_binding
+    implicit none
 
     interface
         ! Interfaces to C callbacks that must be defined by the user
@@ -85,8 +86,8 @@ contains
         integer,             intent(in   ) :: piece
         class(cpf_encap_t), pointer :: py, pf
 
-        py => cast_as_cpf(y)
-        pf => cast_as_cpf(f)
+        py => cast_to_cpf_encap(y)
+        pf => cast_to_cpf_encap(f)
         call imex_sweeper_f_eval_cb(py%data, t, level_index, pf%data, piece)
     end subroutine f_eval
 
@@ -103,9 +104,9 @@ contains
         integer,             intent(in   ) :: piece
         class(cpf_encap_t), pointer :: py, pf, prhs
 
-        py => cast_as_cpf(y)
-        pf => cast_as_cpf(f)
-        prhs => cast_as_cpf(rhs)
+        py => cast_to_cpf_encap(y)
+        pf => cast_to_cpf_encap(f)
+        prhs => cast_to_cpf_encap(rhs)
         call imex_sweeper_f_comp_cb(py%data, t, dtq, prhs%data, level_index, pf%data, piece)
     end subroutine f_comp
 

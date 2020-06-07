@@ -58,3 +58,19 @@ typedef struct cpf_parameter_struct {
     int save_timings;               //  0=none, 1=total only, 2=all, 3=all and echo
     char outdir[256];               //  Output directory
 } cpf_parameter_t;
+
+// Getters and setters for LibPFASST parameters
+// https://libpfasst.github.io/LibPFASST/docs/build/html/parameters.html
+
+/*
+ * Function:  cpf_get_parameters
+ * --------------------
+ * Get a copy of current LibPFASST parameters
+ *
+ *  [in] prm: allocated memory for cpf_parameter_t
+ *  [in] tend: end time of the run
+ *  [in] nsteps: number of steps to run
+ */
+void cpf_get_parameters(cpf_parameter_t** prm);
+
+void cpf_set_parameters(cpf_parameter_t** prm);

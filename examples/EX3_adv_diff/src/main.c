@@ -56,11 +56,11 @@ int main(int argc, char** argv) {
     int finest_nx = ex3_prm.nx[pf_prm.nlevels-1]; // nx at finest level
     ex3_data_t *ic = ex3_data_create(finest_nx);
     exact(ic->array, ic->nx, 0.0); // set to exact solution at t = 0.0
-    cpf_set_initial_condition((user_encap_t**) &ic);
+    cpf_set_initial_condition((user_data_t**) &ic);
 
     // set pointer for the final condition
     ex3_data_t *result = ex3_data_create(finest_nx);
-    cpf_set_final_condition((user_encap_t**) &result);
+    cpf_set_final_condition((user_data_t**) &result);
 
     // start the pfasst run
     cpf_run(&ex3_prm.dt, NULL, &ex3_prm.nsteps);
