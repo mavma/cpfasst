@@ -36,38 +36,37 @@ void load_local_parameters(char *fname) {
         stop("Cannot open input file %s", fname);
     }
 
-    local_prm.v = 1.0;
-    local_prm.nu = 0.01;
-    local_prm.kfreq = 1.0;
-    local_prm.dt = 0.01;
-    local_prm.Tfin = 0.0;
-    local_prm.Lx = 1.0;
-    local_prm.nsteps = -1;
-    local_prm.imex_stat = 2;
-    local_prm.ic_type = 1;
-    strcpy(local_prm.pfasst_nml, fname);
+    ex3_prm.v = 1.0;
+    ex3_prm.nu = 0.01;
+    ex3_prm.kfreq = 1.0;
+    ex3_prm.dt = 0.01;
+    ex3_prm.Tfin = 0.0;
+    ex3_prm.Lx = 1.0;
+    ex3_prm.nsteps = -1;
+    ex3_prm.imex_stat = 2;
+    ex3_prm.ic_type = 1;
+    strcpy(ex3_prm.pfasst_nml, fname);
 
     char *line = NULL;
     size_t len = 0;
     size_t read;
     int nx_pos;
     while((read = getline(&line, &len, f)) != EOF) {
-        if(try_parse_nml(line, "v", "lf", &local_prm.v)) continue;
-        else if(try_parse_nml(line, "nu", "lf", &local_prm.nu)) continue;
-        else if(try_parse_nml(line, "kfreq", "lf", &local_prm.kfreq)) continue;
-        else if(try_parse_nml(line, "dt", "lf", &local_prm.dt)) continue;
-        else if(try_parse_nml(line, "Tfin", "lf", &local_prm.Tfin)) continue;
-        else if(try_parse_nml(line, "Lx", "lf", &local_prm.Lx)) continue;
-        else if(try_parse_nml(line, "nsteps", "d", &local_prm.nsteps)) continue;
-        else if(try_parse_nml(line, "imex_stat", "d", &local_prm.imex_stat)) continue;
-        else if(try_parse_nml(line, "ic_type", "d", &local_prm.ic_type)) continue;
-        else if(try_parse_nml(line, "pfasst_nml", "s", &local_prm.pfasst_nml)) continue;
-        else if(try_parse_nml_int_arr(line, "nx", local_prm.nx, PF_MAXLEVS)) continue;
+        if(try_parse_nml(line, "v", "lf", &ex3_prm.v)) continue;
+        else if(try_parse_nml(line, "nu", "lf", &ex3_prm.nu)) continue;
+        else if(try_parse_nml(line, "kfreq", "lf", &ex3_prm.kfreq)) continue;
+        else if(try_parse_nml(line, "dt", "lf", &ex3_prm.dt)) continue;
+        else if(try_parse_nml(line, "Tfin", "lf", &ex3_prm.Tfin)) continue;
+        else if(try_parse_nml(line, "Lx", "lf", &ex3_prm.Lx)) continue;
+        else if(try_parse_nml(line, "nsteps", "d", &ex3_prm.nsteps)) continue;
+        else if(try_parse_nml(line, "imex_stat", "d", &ex3_prm.imex_stat)) continue;
+        else if(try_parse_nml(line, "ic_type", "d", &ex3_prm.ic_type)) continue;
+        else if(try_parse_nml(line, "pfasst_nml", "s", &ex3_prm.pfasst_nml)) continue;
+        else if(try_parse_nml_int_arr(line, "nx", ex3_prm.nx, PF_MAXLEVS)) continue;
     }
 
     fclose(f);
     if (line) free(line);
 
-    if (local_prm.Tfin > 0.0) local_prm.dt = local_prm.Tfin/local_prm.nsteps; // reset dt if Tfin is set
-    if (local_prm.ic_type != 1) stop("ic_type %d invalid or not implemented", local_prm.ic_type);
+    if (ex3_prm.Tfin > 0.0) ex3_prm.dt = ex3_prm.Tfin/ex3_prm.nsteps; // reset dt if Tfin is set
 }

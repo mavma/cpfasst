@@ -46,7 +46,9 @@ contains
         type(pf_pfasst_t),     intent(inout)  :: pf_prm
         type(cpf_parameter_t), intent(in)   :: cpf_prm
 
-        pf_prm%nlevels = cpf_prm%nlevels
+        if(cpf_prm%nlevels /= pf_prm%nlevels) then
+            call oops(__FILE__,__LINE__, 'parameter nlevels cannot be changed after initialization')
+        end if
         pf_prm%niters = cpf_prm%niters
         pf_prm%qtype = cpf_prm%qtype
         pf_prm%use_proper_nodes = cpf_prm%use_proper_nodes

@@ -1,10 +1,11 @@
 ! High level convenience functions for running cpfasst
-module cpf_run
+module cpf_main
     use pfasst
     use pf_mod_mpi
     use cpf_level
     use cpf_encap
     use cpf_imex_sweeper
+    use cpf_utils
     implicit none
 
     type(pf_pfasst_t) :: pf     !<  the main pfasst structure
@@ -21,7 +22,7 @@ contains
         call pf_pfasst_create(pf, comm, fname=path, nlevels=nlevels, nocmd=.true.)
     end subroutine initialize
 
-    subroutine allocate_level(l, data_size)
+    subroutine initialize_level(l, data_size)
         integer, intent(in) :: l            ! level index
         integer, intent(in) :: data_size    ! size in bytes of user data for this level
         integer :: mpibuflen                ! length of MPI buffer
@@ -36,7 +37,7 @@ contains
         mpibuflen = ceiling(float(data_size)/sizeof(pfdp))
         ! level size here is always 1, the actual size is handled by user code in C
         call pf_level_set_size(pf, l, [1], mpibuflen)
-    end subroutine allocate_level
+    end subroutine initialize_level
 
     subroutine run(dt, nsteps, tend)
         real(pfdp), intent(inout)        :: dt        !!  Time step for each processor
@@ -45,20 +46,18 @@ contains
         real(pfdp) :: tend_local
 
         ! check that initial condition was set
-        if(c_associated(y_0%data, C_NULL_PTR)) call oops('Initial condition must be set before running')
+        if(c_associated(y_0%data, C_NULL_PTR)) then
+            call oops(__FILE__, __LINE__, 'Initial condition must be set before running')
+        end if
         ! further setup of pfasst data
         call pf_pfasst_setup(pf)
-        ! allocate final condition
-        call cpf_encap_build(y_end, -1, [0])
         ! start pfasst run
         if(.not. present(tend)) tend_local = 0.0_pfdp
         call pf_pfasst_run(pf, y_0, dt, tend_local, nsteps, y_end)
     end subroutine run
 
     subroutine destroy()
-        call cpf_encap_destroy(y_0)
-        call cpf_encap_destroy(y_end)
         call pf_pfasst_destroy(pf)
     end subroutine destroy
 
-end module cpf_run
+end module cpf_main

@@ -1,65 +1,77 @@
 #pragma once
 
-// These functions are defined in Fortran to be called from C
+#include "cpf_parameters.h"
 
-// Setup initial condition
-void setup_initial_condition_cb(void** data);
-// Setup final condition
-void setup_final_condition_cb(void** data);
+// Mandatory function calls for a cpfasst run (in this order):
+//
+// 0. MPI_Initialize(...)
+// 1. cpf_initialize(...) -> allocate and initialize parameter structures
+// 2. for each level: cpf_allocate_level(...) -> allocate and initialize levels
+// 3. cpf_run(...) -> trigger pfasst main loop
+// 4. cpf_destroy(...) -> free Fortran-allocated memory
 
-// Forward declaration of Fortran routines
-void cpf_mpi_create();
-// pointer to char[256]
-void cpf_pfasst_create(char*);
-void cpf_user_obj_allocate(size_t* data_size);
-void cpf_pfasst_setup();
-void cpf_setup_ic();
-//real(c_double),    intent(inout)           :: dt   !!  The time step for each processor
-//real(c_double),    intent(in   )           :: tend !!  The final time of run
-//integer(c_int),    intent(in   ), optional :: nsteps  !!  The number of time steps
-//  The user can either pass in the number of time steps or
-//  pass in the time step size and length of run
-void cpf_pfasst_run(double* dt, double* tend, int* nsteps);
-void cpf_cleanup();
+/*
+ * Function:  cpf_initialize_pfasst
+ * --------------------
+ * Initialize pfasst parameters and data structures. Must be called with ONE of the parameters (the unused parameter
+ * must be set to null). This call must be preceded by an MPI_Initialize call. After this call, the user may modify
+ * pfasst parameters using cpf_get_parameters and cpf_set_parameters.
+ *
+ *  nml_file_path: C string containing path to nml file to initialize parameters from. Parameters not set by the nml
+ *      file are initialized to default values.
+ *  nlevels: pointer to number of pfasst levels. All parameters other than the number of levels are initialized to
+ *      default values.
+ */
+void cpf_initialize_pfasst(char* nml_file_path, int* nlevels);
 
-void cpf_imex_sweeper_set_feval(void*);
-void cpf_imex_sweeper_set_fcomp(void*);
+/*
+ * Function:  cpf_initialize_level
+ * --------------------
+ * Allocate and initialize user levels and related structures. Must be called once for every pfasst level.
+ *
+ *  level_index: pointer to 1-based index of level to be initialized
+ *  data_size: pointer to size in bytes of user-allocated data for this level (used for MPI communication)
+ */
+void cpf_initialize_level(int* level_index, int* data_size);
 
-void cpf_setup_initial_condition_cb(void*);
-void cpf_setup_final_condition_cb(void*);
+/*
+ * Function:  cpf_set_initial_condition
+ * --------------------
+ * Set initial condition for run
+ *
+ *  data: pointer to the initial condition
+ */
+void cpf_set_initial_condition(user_encap_t** data);
 
-// Hooks
+/*
+ * Function:  cpf_set_final_condition
+ * --------------------
+ * Set storage for final condition of run
+ *
+ *  data: pointer to allocated memory where the final condition shall be stored
+ */
+void cpf_set_final_condition(user_encap_t** data);
 
-typedef enum {
-    PF_PRE_PREDICTOR     = 1,
-    PF_POST_PREDICTOR    = 2,
-    PF_PRE_ITERATION     = 3,
-    PF_POST_ITERATION    = 4,
-    PF_PRE_SWEEP         = 5,
-    PF_POST_SWEEP        = 6,
-    PF_PRE_BLOCK         = 7,
-    PF_POST_BLOCK        = 8,
-    PF_PRE_INTERP_ALL    = 9,
-    PF_POST_INTERP_ALL   = 10,
-    PF_PRE_INTERP_Q0     = 11,
-    PF_POST_INTERP_Q0    = 12,
-    PF_PRE_RESTRICT_ALL  = 13,
-    PF_POST_RESTRICT_ALL = 14,
-    PF_PRE_CONVERGENCE   = 15,
-    PF_POST_CONVERGENCE  = 16,
-    PF_POST_ALL          = 17
-} cpf_hooks_t;
+/*
+ * Function:  cpf_run
+ * --------------------
+ * Trigger the main pfasst loop. Must be called with tend OR nstep (the unused parameter must be set to null).
+ *
+ *  dt: pointer to time step size
+ *  tend: pointer to end time of the run
+ *  nsteps: pointer to number of steps to run
+ */
+void cpf_run(double* dt, double* tend, int* nsteps);
 
-// Adds a custom hook to a C callback
-//      level_index: the level to add the hook for, -1 for all levels
-//      hook: which type of hook to add
-//      callback: pointer to callback function with the following signature:
-//          void my_callback(void* pf, int* idx)
-//              pf: opaque data structure which SHOULD NOT BE MODIFIED
-//              idx: level the callback was called for
-void cpf_add_custom_hook(int* level_index, cpf_hooks_t* hook, void(**callback)(void*,int*));
+/*
+ * Function:  cpf_destroy
+ * --------------------
+ * Free Fortran-allocated memory for the run
+ */
+void cpf_destroy();
 
-// Adds hook to the LibPFASST-provided echo_residual function
-//      level_index: the level to add the hook for, -1 for all levels
-//      hook: which type of hook to add
-void cpf_add_echo_residual_hook(int* level_index, cpf_hooks_t* hook);
+// Getters and setters for LibPFASST parameters
+// https://libpfasst.github.io/LibPFASST/docs/build/html/parameters.html
+
+void cpf_get_parameters(cpf_parameter_t** prm);
+void cpf_set_parameters(cpf_parameter_t** prm);

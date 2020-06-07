@@ -2,16 +2,14 @@
 
 #include <complex.h>
 
-// TODO: remove unneeded data for 1D
 typedef struct fft_tool_struct {
     int nx;
     int lensavx;
     double normfact;
-    double complex *workhatx; // size nx
-    double *wsavex; // size lensavx
+    double *wsavex;             // size = lensavx
     double Lx;
-    double complex *wk_1d; // size nx
-    double *kx; // size nx
+    double complex *wk_1d;      // size = nx
+    double *kx;                 // size = nx
 } fft_tool_t;
 
 void fft_setup(fft_tool_t *this, int nx, double Lx);

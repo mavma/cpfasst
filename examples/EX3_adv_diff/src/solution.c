@@ -25,6 +25,6 @@ void exact_ad_cos_1ds(double t, double y[], int nx, double nu, double v, double 
 
 // get exact solution at time t
 void exact(double y[], int nx, double t) {
-    assert(local_prm.ic_type == 1);
-    exact_ad_cos_1ds(t, y, nx, local_prm.nu, local_prm.v, local_prm.kfreq, local_prm.Lx);
+    assert(ex3_prm.ic_type == 1);
+    exact_ad_cos_1ds(t, y, nx, ex3_prm.nu, ex3_prm.v, ex3_prm.kfreq, ex3_prm.Lx);
 }

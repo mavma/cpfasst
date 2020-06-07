@@ -5,17 +5,17 @@
 #include "shared.h"
 #include "fft_tool.h"
 
-void level_interpolate(int f_idx, int c_idx, my_data_t* f_data, my_data_t* c_data) {
+void level_interpolate(int f_idx, int c_idx, ex3_data_t* f_data, ex3_data_t* c_data) {
     fft_tool_t *fft_f = sweepers[f_idx]->fft_tool;
     fft_tool_t *fft_c = sweepers[c_idx]->fft_tool;
-    int irat  = f_data->size / c_data->size;
+    int irat  = f_data->nx / c_data->nx;
 
-    assert(f_data->size == irat * c_data->size);
+    assert(f_data->nx == irat * c_data->nx);
     assert(irat == 1 || irat == 2);
 
     switch(irat) {
         case 1: //  Identity map
-            memcpy(f_data->array, c_data->array, f_data->size * sizeof(double));
+            memcpy(f_data->array, c_data->array, f_data->nx * sizeof(double));
             break;
         case 2: //  Use spectral space
             interp_1d(fft_c, c_data->array, fft_f, f_data->array);
@@ -23,12 +23,12 @@ void level_interpolate(int f_idx, int c_idx, my_data_t* f_data, my_data_t* c_dat
     }
 }
 
-void level_restrict(my_data_t* f_data, my_data_t* c_data) {
-    int irat  = f_data->size / c_data->size;
-    assert(f_data->size == irat * c_data->size);
+void level_restrict(ex3_data_t* f_data, ex3_data_t* c_data) {
+    int irat  = f_data->nx / c_data->nx;
+    assert(f_data->nx == irat * c_data->nx);
 
     // Pointwise coarsening
-    for(int i=0; i<c_data->size; i++)
+    for(int i=0; i<c_data->nx; i++)
         c_data->array[i] = f_data->array[i*irat];
 }
 

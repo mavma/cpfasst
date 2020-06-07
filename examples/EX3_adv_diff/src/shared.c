@@ -1,4 +1,4 @@
 #include "shared.h"
 
-local_prm_t local_prm;
-my_sweeper_t *sweepers[PF_MAXLEVS];
+ex3_prm_t ex3_prm;
+ex3_sweeper_t *sweepers[PF_MAXLEVS];

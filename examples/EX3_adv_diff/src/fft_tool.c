@@ -22,10 +22,7 @@ void fft_setup(fft_tool_t *this, int nx, double Lx) {
     this->nx = nx;
     this->lensavx = 4*this->nx + 15;
     this->normfact = this->nx;
-
-    this->workhatx = (double complex*) calloc_and_check(this->nx, sizeof(double complex));
     this->wsavex = (double*) calloc_and_check(this->lensavx, sizeof(double));
-
     this->Lx = Lx;
 
     // Initialize FFT
@@ -48,7 +45,6 @@ void fft_setup(fft_tool_t *this, int nx, double Lx) {
 }
 
 void fft_destroy(fft_tool_t *this) {
-    free(this->workhatx);
     free(this->wsavex);
     free(this->wk_1d);
     free(this->kx);

@@ -1,35 +1,24 @@
 #pragma once
 
-typedef enum {
-    PF_PRE_PREDICTOR     = 1,
-    PF_POST_PREDICTOR    = 2,
-    PF_PRE_ITERATION     = 3,
-    PF_POST_ITERATION    = 4,
-    PF_PRE_SWEEP         = 5,
-    PF_POST_SWEEP        = 6,
-    PF_PRE_BLOCK         = 7,
-    PF_POST_BLOCK        = 8,
-    PF_PRE_INTERP_ALL    = 9,
-    PF_POST_INTERP_ALL   = 10,
-    PF_PRE_INTERP_Q0     = 11,
-    PF_POST_INTERP_Q0    = 12,
-    PF_PRE_RESTRICT_ALL  = 13,
-    PF_POST_RESTRICT_ALL = 14,
-    PF_PRE_CONVERGENCE   = 15,
-    PF_POST_CONVERGENCE  = 16,
-    PF_POST_ALL          = 17
-} cpf_hooks_t;
+#include <cpf_static.h>
 
-// Adds a custom hook to a C callback
-//      level_index: the level to add the hook for, -1 for all levels
-//      hook: which type of hook to add
-//      callback: pointer to callback function with the following signature:
-//          void my_callback(void* pf, int* idx)
-//              pf: opaque data structure which SHOULD NOT BE MODIFIED
-//              idx: level the callback was called for
-void cpf_add_custom_hook(int* level_index, cpf_hooks_t* hook, void(**callback)(void*,int*));
+/*
+ * Type:  cpf_hook_cb_t
+ * --------------------
+ * Typedef for user-defined hook callbacks
+ *  pf: opaque data structure which MUST NOT BE MODIFIED. If access to pfasst parameters is needed, use
+ *      cpf_get_parameters
+ *  idx: pointer to 1-based index of level which triggered the callback
+ */
+typedef void(cpf_hook_cb_t)(void* pf, int* idx)
 
-// Adds hook to the LibPFASST-provided echo_residual function
-//      level_index: the level to add the hook for, -1 for all levels
-//      hook: which type of hook to add
-void cpf_add_echo_residual_hook(int* level_index, cpf_hooks_t* hook);
+/*
+ * Function:  cpf_add_custom_hook
+ * --------------------
+ * Adds a custom hook to a user-defined callback function
+ *
+ *  level_index: pointer to 1-based index of level to add the hook for. Set value to -1 to add for all levels.
+ *  hook: which type of hook to add
+ *  callback: double pointer to user-defined callback function
+ */
+void cpf_add_custom_hook(int* level_index, cpf_hooks_t* hook, cpf_hook_cb_t **callback);

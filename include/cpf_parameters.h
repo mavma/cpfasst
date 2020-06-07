@@ -3,11 +3,8 @@
 #include <stdbool.h>
 #include "cpf_static.h"
 
-// Interface for controlling LibPFASST parameters
-// https://libpfasst.github.io/LibPFASST/docs/build/html/parameters.html
-
 typedef struct cpf_parameter_struct {
-    // === Mandatory pfasst parameters (must be set on command line or input file)  ===
+    // === Mandatory pfasst parameters (must be set during initialization, cannot be changed)  ===
     int nlevels;                    // number of pfasst levels
 
     //  ===  Optional pfasst parameters ====
@@ -61,9 +58,3 @@ typedef struct cpf_parameter_struct {
     int save_timings;               //  0=none, 1=total only, 2=all, 3=all and echo
     char outdir[256];               //  Output directory
 } cpf_parameter_t;
-
-// Load LibPFASST parameters into preallocated memory
-void cpf_get_parameters(cpf_parameter_t **prm);
-
-// Set LibPFASST parameters to provided values
-void cpf_set_parameters(cpf_parameter_t **prm);

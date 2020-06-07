@@ -1,6 +1,6 @@
 ! Interoperable routines to be called by user code
 module cpfasst
-    use cpf_run
+    use cpf_main
     use cpf_parameters
     use cpf_utils
     use iso_c_binding
@@ -8,37 +8,36 @@ module cpfasst
 
 contains
 
-    ! C interfaces for cpf_run subroutines
+    ! C interfaces for cpf_main subroutines
 
-    subroutine cpf_initialize_from_nml(path) bind(C)
-        character(c_char), intent(in) :: path(256)
+    subroutine cpf_initialize_pfasst(path, nlevels) bind(C)
+        character(c_char), intent(in), optional :: path(256)
+        integer(c_int),    intent(in), optional :: nlevels
         character(256) :: f_path
+
+        if(present(path) .eqv. present(nlevels)) then
+            call oops(__FILE__, __LINE__, 'cpf_initialize must be called with either "path" or "nlevels" argument')
+        end if
         call c_f_string(path, f_path)
         call initialize(path=f_path)
-    end subroutine cpf_initialize_from_nml
+    end subroutine cpf_initialize_pfasst
 
-    subroutine cpf_initialize_default(nlevels) bind(C)
-        integer(c_int), intent(in) :: nlevels
-        call initialize(nlevels=nlevels)
-    end subroutine cpf_initialize_default
-
-    subroutine cpf_allocate_level(level_index, data_size) bind(C)
+    subroutine cpf_initialize_level(level_index, data_size) bind(C)
         integer(c_int), intent(in) :: level_index
         integer(c_int), intent(in) :: data_size
-        call allocate_level(level_index, data_size)
-    end subroutine cpf_allocate_level
+        call initialize_level(level_index, data_size)
+    end subroutine cpf_initialize_level
 
-    subroutine cpf_run_tend(dt, tend) bind(C)
-        real(c_double), intent(inout) :: dt
-        real(c_double), intent(in) :: tend
-        call run(dt, tend=tend)
-    end subroutine cpf_run_tend
+    subroutine cpf_run(dt, tend, nsteps) bind(C)
+        real(c_double), intent(inout)           :: dt
+        real(c_double), intent(in),    optional :: tend
+        integer(c_int), intent(in),    optional :: nsteps
 
-    subroutine cpf_run_nsteps(dt, nsteps) bind(C)
-        real(c_double), intent(inout) :: dt
-        integer(c_int), intent(in) :: nsteps
-        call run(dt, nsteps=nsteps)
-    end subroutine cpf_run_nsteps
+        if(present(tend) .eqv. present(nsteps)) then
+            call oops(__FILE__, __LINE__, 'cpf_run must be called with either "tend" or "nsteps" argument')
+        end if
+        call run(dt, tend=tend, nsteps=nsteps)
+    end subroutine cpf_run
 
     subroutine cpf_destroy() bind(C)
         call destroy()
@@ -60,12 +59,17 @@ contains
         call get_parameters(pf, param_fptr)
     end subroutine cpf_get_parameters
 
-    subroutine cpf_set_ic(data) bind(C)
+    subroutine cpf_set_initial_condition(data) bind(C)
         type(c_ptr) :: data
         y_0%data = data
-    end subroutine cpf_set_ic
+    end subroutine cpf_set_initial_condition
 
-    ! Optional interfaces
+    subroutine cpf_set_final_condition(data) bind(C)
+        type(c_ptr) :: data
+        y_end%data = data
+    end subroutine cpf_set_final_condition
+
+    ! Custom hook interface
 
     subroutine cpf_add_custom_hook(level_index, hook, c_fun) bind(C)
         integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
@@ -76,11 +80,5 @@ contains
         call c_f_procpointer(c_fun, procptr)
         call pf_add_hook(pf, level_index, hook, procptr)
     end subroutine cpf_add_custom_hook
-
-    subroutine cpf_add_echo_residual_hook(level_index, hook) bind(C)
-        integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
-        integer(c_int),    intent(in)    :: hook          !! which hook to add
-        call pf_add_hook(pf, level_index, hook, pf_echo_residual)
-    end subroutine cpf_add_echo_residual_hook
 
 end module cpfasst
