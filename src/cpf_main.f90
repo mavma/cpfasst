@@ -46,8 +46,8 @@ contains
         real(pfdp) :: tend_local
 
         ! check that initial condition was set
-        if(c_associated(y_0%data, C_NULL_PTR)) then
-            call oops(__FILE__, __LINE__, 'Initial condition must be set before running')
+        if(c_associated(y_0%data, C_NULL_PTR) .or. c_associated(y_end%data, C_NULL_PTR)) then
+            call oops(__FILE__, __LINE__, 'Initial condition and final solution must be set before running')
         end if
         ! further setup of pfasst data
         call pf_pfasst_setup(pf)

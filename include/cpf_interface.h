@@ -47,11 +47,11 @@ void cpf_set_initial_condition(user_data_t** data);
 /*
  * Function:  cpf_set_final_condition
  * --------------------
- * Set storage for final condition of run
+ * Set storage for final solution of run
  *
- *  [in] data: allocated user_data_t, will be set to final condition at the end of the run
+ *  [in] data: allocated user_data_t, will be set by LibPFASST to final solution at the end of the run
  */
-void cpf_set_final_condition(user_data_t** data);
+void cpf_set_final_solution(user_data_t** data);
 
 /*
  * Function:  cpf_run
@@ -70,4 +70,10 @@ void cpf_run(double* dt, double* tend, int* nsteps);
  * Free Fortran-allocated memory for the run
  */
 void cpf_destroy();
+
+// Get pointer to current solution at given level
+user_data_t* cpf_get_current_solution(int level_index);
+
+// Get time at current endpoint
+double cpf_get_endpoint_time();
 

@@ -64,21 +64,41 @@ contains
         y_0%data = data
     end subroutine cpf_set_initial_condition
 
-    subroutine cpf_set_final_condition(data) bind(C)
+    subroutine cpf_set_final_solution(data) bind(C)
         type(c_ptr) :: data
         y_end%data = data
-    end subroutine cpf_set_final_condition
+    end subroutine cpf_set_final_solution
 
-    ! Custom hook interface
+    function cpf_get_current_solution(level_index) result(data) bind(C)
+        integer(c_int), intent(in), value :: level_index
+        type(c_ptr)                       :: data
+        type(cpf_encap_t), pointer :: cpf_qend
+        cpf_qend => cast_to_cpf_encap(pf%levels(level_index)%qend)
+        data = cpf_qend%data
+    end function cpf_get_current_solution
 
+    function cpf_get_endpoint_time() result(t) bind(C)
+        real(c_double) :: t
+        t = pf%state%t0 + pf%state%dt
+    end function cpf_get_endpoint_time
+
+    ! pf_add_hook interface
     subroutine cpf_add_custom_hook(level_index, hook, c_fun) bind(C)
-        integer(c_int),    intent(in)    :: level_index   !! which pfasst level to add hook
-        integer(c_int),    intent(in)    :: hook          !! which hook to add
-        type(c_funptr)                   :: c_fun         !! function pointer to c callback
+        integer(c_int), intent(in), value :: level_index
+        integer(c_int), intent(in), value :: hook
+        type(c_funptr), intent(in), value :: c_fun
         procedure(pf_hook_p), pointer :: procptr
 
         call c_f_procpointer(c_fun, procptr)
         call pf_add_hook(pf, level_index, hook, procptr)
     end subroutine cpf_add_custom_hook
+
+    ! pf_set_error interface
+    subroutine cpf_set_error(level_index, error) bind(C)
+        integer(c_int), intent(in), value :: level_index
+        real(c_double), intent(in), value :: error
+
+        call pf_set_error(pf, level_index, error)
+    end subroutine cpf_set_error
 
 end module cpfasst

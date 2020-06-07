@@ -2,23 +2,14 @@
 
 #include <cpf_static.h>
 
-/*
- * Type:  cpf_hook_cb_t
- * --------------------
- * Typedef for user-defined hook callbacks
- *  pf: opaque data structure which MUST NOT BE MODIFIED. If access to pfasst parameters is needed, use
- *      cpf_get_parameters
- *  idx: pointer to 1-based index of level which triggered the callback
- */
-typedef void(cpf_hook_cb_t)(void* pf, int* idx)
+// Typedef for user-defined hook callback functions
+//   *pf: opaque data structure which MUST NOT BE MODIFIED
+//   *level_index: index of level which triggered the callback
+typedef void(*cpf_hook_cb_t)(void* pf, int* level_index);
 
-/*
- * Function:  cpf_add_custom_hook
- * --------------------
- * Adds a custom hook to a user-defined callback function
- *
- *  level_index: pointer to 1-based index of level to add the hook for. Set value to -1 to add for all levels.
- *  hook: which type of hook to add
- *  callback: double pointer to user-defined callback function
- */
-void cpf_add_custom_hook(int* level_index, cpf_hooks_t* hook, cpf_hook_cb_t **callback);
+// Add a custom hook to a level for a certain condition, triggering a call to a user-defined callback function
+// Use level_index = -1 to set for all levels.
+void cpf_add_custom_hook(int level_index, cpf_hooks_t hook, cpf_hook_cb_t callback);
+
+// Can be called from a hook callback to set the error value for a level at the current run state
+void cpf_set_error(int level_index, double error);

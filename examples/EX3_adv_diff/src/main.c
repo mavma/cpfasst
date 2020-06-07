@@ -2,21 +2,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mpi.h>
-
 #include <cpf_interface.h>
 #include <cpf_imex_sweeper.h>
 #include <cpf_parameters.h>
+#include <cpf_hooks.h>
 #include "utils.h"
-
 #include "shared.h"
 #include "probin.h"
 #include "solution.h"
 #include "encap.h"
 
+
 char fname[256] = "probin.nml";
 
-void run_pfasst() {
-
+// compute error of current solution, then set it on LibPFASST for output
+void update_error(void* pf, int* level_index) {
+    double t = cpf_get_endpoint_time();
+    ex3_data_t *current = cpf_get_current_solution(*level_index);
+    double error = compute_error(current, t);
+    cpf_set_error(*level_index, error);
 }
 
 int main(int argc, char** argv) {
@@ -41,8 +45,9 @@ int main(int argc, char** argv) {
     // get libpfasst parameters
     cpf_parameter_t pf_prm, *pf_prm_ptr = &pf_prm;
     cpf_get_parameters(&pf_prm_ptr);
-    // set an unused libpfasst parameter to show we can
-    memcpy(pf_prm.nsteps_rk, (int[]) {1, 2, 3, 4}, PF_MAXLEVS);
+    // change output folder name
+    int np; MPI_Comm_size(MPI_COMM_WORLD, &np);
+    sprintf(pf_prm.outdir, "outdirP%04d", np);
     cpf_set_parameters(&pf_prm_ptr);
 
     // initialize levels
@@ -55,12 +60,15 @@ int main(int argc, char** argv) {
     // set the initial condition
     int finest_nx = ex3_prm.nx[pf_prm.nlevels-1]; // nx at finest level
     ex3_data_t *ic = ex3_data_create(finest_nx);
-    exact(ic->array, ic->nx, 0.0); // set to exact solution at t = 0.0
+    compute_exact_solution(ic, 0.0);
     cpf_set_initial_condition((user_data_t**) &ic);
 
-    // set pointer for the final condition
-    ex3_data_t *result = ex3_data_create(finest_nx);
-    cpf_set_final_condition((user_data_t**) &result);
+    // set pointer for the final solution
+    ex3_data_t *final_sol = ex3_data_create(finest_nx);
+    cpf_set_final_solution((user_data_t**) &final_sol);
+
+    // set hook to update LibPFASST error
+    cpf_add_custom_hook(-1, PF_POST_SWEEP, &update_error);
 
     // start the pfasst run
     cpf_run(&ex3_prm.dt, NULL, &ex3_prm.nsteps);
@@ -69,12 +77,9 @@ int main(int argc, char** argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
 
-    // print the result
-    // TODO
-
     // free LibPFASST and local memory
     cpf_destroy();
     ex3_data_destroy(ic);
-    ex3_data_destroy(result);
+    ex3_data_destroy(final_sol);
 }
 
