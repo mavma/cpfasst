@@ -13,12 +13,12 @@ module cpf_imex_sweeper
             integer(c_int),  intent(in), value :: level_index
             logical(c_bool), intent(out)       :: explicit
             logical(c_bool), intent(out)       :: implicit
-        end subroutine
+        end subroutine cpf_imex_sweeper_initialize_cb
 
         subroutine cpf_imex_sweeper_destroy_cb(level_index) bind(C)
             import :: c_int
             integer(c_int), intent(in), value :: level_index
-        end subroutine
+        end subroutine cpf_imex_sweeper_destroy_cb
 
         subroutine cpf_imex_sweeper_f_eval_cb(y, t, level_index, f, piece) bind(C)
             import :: c_double, c_int, c_ptr
@@ -27,7 +27,7 @@ module cpf_imex_sweeper
             integer(c_int), intent(in), value :: level_index
             type(c_ptr),    intent(in), value :: f
             integer(c_int), intent(in), value :: piece
-        end subroutine
+        end subroutine cpf_imex_sweeper_f_eval_cb
 
         subroutine cpf_imex_sweeper_f_comp_cb(y, t, dtq, rhs, level_index, f) bind(C)
             import :: c_double, c_int, c_ptr
@@ -37,7 +37,7 @@ module cpf_imex_sweeper
             type(c_ptr),    intent(in), value :: rhs
             integer(c_int), intent(in), value :: level_index
             type(c_ptr),    intent(in), value :: f
-        end subroutine
+        end subroutine cpf_imex_sweeper_f_comp_cb
     end interface
 
     type, extends(pf_imex_sweeper_t) :: cpf_imex_sweeper_t
