@@ -81,5 +81,7 @@ int main(int argc, char** argv) {
     cpf_destroy();
     ex3_data_destroy(ic);
     ex3_data_destroy(final_sol);
+
+    printf("Run complete\n");
 }
 

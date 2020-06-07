@@ -14,7 +14,7 @@ RUN="./tests/run_example.sh"
 PATH_CPF="examples/$EXAMPLE"
 PATH_LPF="LibPFASST/Tutorials/$EXAMPLE"
 
-for nml in "probin" "sdc" "multi_level" "pipeline"; do
+for nml in "probin" "sdc" "pipeline" "multi_level"; do
   echo "Testing $EXAMPLE with nml file $nml"
   [ ! -e "$PATH_CPF/dat" ] || rm -r "$PATH_CPF/dat"
   [ ! -e "$PATH_LPF/dat" ] || rm -r "$PATH_LPF/dat"

@@ -103,9 +103,7 @@ void zinterp_1d(double complex yhat_c[], int nx_c, double complex yhat_f[], int 
 
 void interp_1d(fft_tool_t *fft_c, double yvec_c[], fft_tool_t *fft_f, double yvec_f[]) {
     if(fft_c->nx == fft_f->nx) {
-        for (int i = 0; i < fft_c->nx; i++) {
-            yvec_f[i] = yvec_c[i];
-        }
+        for (int i = 0; i < fft_c->nx; i++) yvec_f[i] = yvec_c[i];
         return;
     }
     // wk_c=yvec_c
@@ -117,5 +115,5 @@ void interp_1d(fft_tool_t *fft_c, double yvec_c[], fft_tool_t *fft_f, double yve
     // call fft_f%fftb()     !  internal inverse fft call
     fftb(fft_f);
     // yvec_f=REAL(wk_f,pfdp) !  grab the real part
-    for(int i = 0; i < fft_c->nx; i++) yvec_f[i] = creal(fft_f->wk_1d[i]);
+    for(int i = 0; i < fft_f->nx; i++) yvec_f[i] = creal(fft_f->wk_1d[i]);
 }

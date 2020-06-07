@@ -5,15 +5,6 @@
 #include "shared.h"
 #include "fft_tool.h"
 
-void level_restrict(ex3_data_t* f_data, ex3_data_t* c_data) {
-    int irat  = f_data->nx / c_data->nx;
-    assert(f_data->nx == irat * c_data->nx);
-
-    // Pointwise coarsening
-    for(int i=0; i<c_data->nx; i++)
-        c_data->array[i] = f_data->array[i*irat];
-}
-
 void cpf_level_interpolate_cb(int f_level_index, int c_level_index, user_data_t* f_data, user_data_t* c_data, double t) {
     ex3_data_t *f_data_ = (ex3_data_t*) f_data;
     ex3_data_t *c_data_ = (ex3_data_t*) c_data;
