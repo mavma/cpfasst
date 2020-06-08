@@ -38,6 +38,15 @@ CFLAGS += -O3
 FFLAGS += -O3
 endif
 
+# strict checks on memory access - does not work under gdb
+ASAN ?= 0
+ifeq ($(ASAN),1)
+CFLAGS += -fsanitize=address
+FFLAGS += -fsanitize=address
+CLDFLAGS += -fsanitize=address
+FLDFLAGS += -fsanitize=address
+endif
+
 # control verbosity
 V ?= 0
 ifeq ($(V),0)
