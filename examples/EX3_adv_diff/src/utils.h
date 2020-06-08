@@ -7,4 +7,3 @@
 
 void* malloc_and_check_(size_t size, const char* file, int nline);
 void stop_(const char* file, int nline, const char *fmt, ...);
-void debug_log(const char *fmt, ...);
