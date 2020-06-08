@@ -1,14 +1,15 @@
 CPFASST_DIR ?= $(PWD)
 LIBPFASST_DIR := $(CPFASST_DIR)/LibPFASST
 
-MPI_BIN ?= /opt/mpich/bin
-
-CC := $(MPI_BIN)/mpicc
-FC := $(MPI_BIN)/mpif90
-LD := $(MPI_BIN)/mpicc
+CC := mpicc
+FC := mpif90
+LD := mpicc
 AR = ar rcs
 
-GCC10 ?= TRUE # enables gcc10-only flag to allow compiling LibPFASST
+# enables gcc10-only flag to allow compiling LibPFASST
+GCC10 ?= TRUE
+# supported: mpich, openmpi
+MPI ?= mpich
 
 # C compiler & linker flags
 CFLAGS =
@@ -20,10 +21,11 @@ FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-chec
 FLDFLAGS := -L$(LIBPFASST_DIR)/lib -lpfasst
 
 # MPI linking flags
-# Uncomment next line for OpenMPI
-# FMPIFLAGS += $(shell mpif90 --showme:link)
-# Uncomment next line for mpich
+ifeq ($(MPI),mpich)
 FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
+else ifeq ($(MPI),openmpi)
+FMPIFLAGS += $(shell mpif90 --showme:link)
+endif
 
 # TODO: change default
 # debug flags

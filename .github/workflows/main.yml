@@ -4,12 +4,11 @@ on: [push]
 
 jobs:
   test-ubuntu:
-    if: "!contains(github.event.head_commit.message, 'skip-ci')"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
-        tutorial: ["EX2_Dahlquist" "EX3_adv_diff"]
-        mpi_bin: ["/usr/bin/"]
+        tutorial: ['EX2_Dahlquist', 'EX3_adv_diff']
+        mpi: ['mpich', 'openmpi']
     steps:
       - uses: actions/checkout@v2
       - name: Checkout submodules
@@ -19,18 +18,24 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
       - name: Setup mpich
+        if: matrix.mpi == 'mpich'
         run: |
           sudo apt-get update
           sudo apt-get -y install mpich
+      - name: Setup openmpi
+        if: matrix.mpi == 'openmpi'
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev
       - name: Compile
         run: |
           cd examples/${{ matrix.tutorial }}
-          make MPI_BIN=${{ matrix.mpi_bin }} GCC10=FALSE
+          make V=1 GCC10=FALSE MPI=${{ matrix.mpi }}
       - name: Run sequential
-        run: ./tests/run_example.sh EX2_Dahlquist
+        run: ./tests/run_example.sh ${{ matrix.tutorial }}
       - name: Run parallel
-        run: ./tests/run_example.sh -n 4 EX2_Dahlquist
-      - name: Test
+        run: ./tests/run_example.sh -n 4 ${{ matrix.tutorial }}
+      - name: Test sequential
         run: |
-          make MPI_BIN=${{ matrix.mpi_bin }} -C LibPFASST/Tutorials/${{ matrix.tutorial }}
+          make -C LibPFASST/Tutorials/${{ matrix.tutorial }}
           ./tests/test_example.sh ${{ matrix.tutorial }}
