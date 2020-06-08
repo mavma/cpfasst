@@ -3,6 +3,7 @@
 
 #include "solution.h"
 
+#include <stdlib.h>
 #include <assert.h>
 #include <math.h>
 #include "shared.h"
@@ -38,6 +39,6 @@ double compute_error(user_data_t* y, double t) {
         double abs = fabs(y->arr[i] - exact->arr[i]);
         max = (abs > max) ? abs : max;
     }
-    return max;
     ex3_data_destroy(exact);
+    return max;
 }
