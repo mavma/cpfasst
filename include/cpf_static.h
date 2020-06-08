@@ -23,6 +23,3 @@ typedef enum {
     PF_POST_CONVERGENCE  = 16,
     PF_POST_ALL          = 17
 } cpf_hooks_t;
-
-// User data typedef to aid in readability of callback declarations
-typedef void user_data_t;

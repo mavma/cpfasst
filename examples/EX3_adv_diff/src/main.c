@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     // initialize levels
     for(int l=0; l<pf_prm.nlevels; l++) {
         int level_index = l + 1; // 1-based index
-        int data_size = 512 * sizeof(double); //FIXME
+        int data_size = ex3_data_get_size(ex3_prm.nx[l]);
         cpf_initialize_level(&level_index, &data_size);
     }
 

@@ -5,11 +5,13 @@
 #include <cpf_static.h>
 #include "fft_tool.h"
 
-// encapsulated type for 1D array
+// user-defined data structure for 1D array
 typedef struct ex3_data_struct {
-    size_t nx;      // number of elements in the array
-    double *array;  // pointer to array data
+    size_t nx;
+    double arr[]; // size nx
 } ex3_data_t;
+
+typedef ex3_data_t user_data_t;
 
 // data for each level sweeper
 typedef struct ex3_sweeper_struct {

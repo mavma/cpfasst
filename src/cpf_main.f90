@@ -25,7 +25,6 @@ contains
     subroutine initialize_level(l, data_size)
         integer, intent(in) :: l            ! level index
         integer, intent(in) :: data_size    ! size in bytes of user data for this level
-        integer :: mpibuflen                ! length of MPI buffer
 
         ! allocate level object
         allocate(cpf_level_t::pf%levels(l)%ulevel)
@@ -33,10 +32,10 @@ contains
         allocate(cpf_factory::pf%levels(l)%ulevel%factory)
         ! allocate sweeper
         allocate(cpf_imex_sweeper_t::pf%levels(l)%ulevel%sweeper)
-        ! size of mpi buffer is the length of an array of type real(pfdp) that can hold the user data
-        mpibuflen = ceiling(float(data_size)/sizeof(pfdp))
+        ! check that data_size is a multiple of pfdp
+        if(modulo(data_size, pfdp) /= 0) call oops(__FILE__, __LINE__, 'Data size must be a multiple of sizeof(double)')
         ! level size here is always 1, the actual size is handled by user code in C
-        call pf_level_set_size(pf, l, [1], mpibuflen)
+        call pf_level_set_size(pf, l, [1], data_size)
     end subroutine initialize_level
 
     subroutine run(dt, nsteps, tend)

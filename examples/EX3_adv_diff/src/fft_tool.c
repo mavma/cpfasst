@@ -3,11 +3,11 @@
 
 #include "fft_tool.h"
 
-#include <quadmath.h>
 #include <math.h>
 #include <assert.h>
 #include <fftpack.h>
 #include "utils.h"
+#include "shared.h"
 
 // helper function for Fortran syntax y[y1:y2] = x[x1:x2] (complex)
 void fvec_assign(complex double y[], int y1, int y2, complex double x[], int x1, int x2) {
@@ -22,18 +22,17 @@ void fft_setup(fft_tool_t *this, int nx, double Lx) {
     this->nx = nx;
     this->lensavx = 4*this->nx + 15;
     this->normfact = this->nx;
-    this->wsavex = (double*) calloc_and_check(this->lensavx, sizeof(double));
+    this->wsavex = (double*) malloc_and_check(this->lensavx*sizeof(double));
     this->Lx = Lx;
 
     // Initialize FFT
     cffti(this->nx, this->wsavex);
 
-    this->wk_1d = (double complex*) calloc_and_check(this->nx, sizeof(double complex));
+    this->wk_1d = (double complex*) malloc_and_check(this->nx*sizeof(double complex));
 
     // Assign wave numbers
-    this->kx = (double*) calloc_and_check(this->nx, sizeof(double));
-    double twopi = (double) (M_PIq * 2.0Q);
-    double om = twopi/this->Lx;
+    this->kx = (double*) malloc_and_check(this->nx*sizeof(double));
+    double om = TWOPI/this->Lx;
 
     for(int i=0; i<this->nx; i++) {
         if(i+1 <= this->nx/2+1) {
