@@ -26,6 +26,7 @@ contains
         integer, intent(in) :: l            ! level index
         integer, intent(in) :: data_size    ! size in bytes of user data for this level
         integer :: mpibuflen
+        real(pfdp) :: dummy ! for sizeof purposes
 
         ! allocate level object
         allocate(cpf_level_t::pf%levels(l)%ulevel)
@@ -34,8 +35,8 @@ contains
         ! allocate sweeper
         allocate(cpf_imex_sweeper_t::pf%levels(l)%ulevel%sweeper)
         ! that data_size fits LibPFASST's MPI buffer
-        mpibuflen = data_size/sizeof(pf%levels(l)%send)
-        if(modulo(data_size, sizeof(pf%levels(l)%send)) /= 0) then
+        mpibuflen = data_size/sizeof(dummy)
+        if(modulo(data_size, sizeof(dummy)) /= 0) then
             call oops(__FILE__, __LINE__, 'Data size must be a multiple of the size of real(pfdp)')
         end if
         ! level size here is always 1, the actual size is handled by user code in C
