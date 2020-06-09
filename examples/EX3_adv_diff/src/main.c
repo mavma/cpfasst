@@ -1,3 +1,4 @@
+#include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +14,7 @@
 #include "encap.h"
 
 
-char fname[256] = "probin.nml";
+char fname[256] = "test.nml";
 
 // compute error of current solution, then set it on LibPFASST for output
 void update_error(void* pf, int* level_index) {
