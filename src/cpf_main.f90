@@ -43,11 +43,9 @@ contains
         call pf_level_set_size(pf, l, [1], mpibuflen)
     end subroutine initialize_level
 
-    subroutine run(dt, nsteps, tend)
-        real(pfdp), intent(inout)        :: dt        !!  Time step for each processor
-        integer,    intent(in), optional :: nsteps    !!  Number of time steps
-        real(pfdp), intent(in), optional :: tend      !!  Final time of run
-        real(pfdp) :: tend_local
+    subroutine run(dt, nsteps)
+        real(pfdp), intent(inout) :: dt        !!  Time step for each processor
+        integer,    intent(in) :: nsteps    !!  Number of time steps
 
         ! check that initial condition was set
         if(c_associated(y_0%data, C_NULL_PTR) .or. c_associated(y_end%data, C_NULL_PTR)) then
@@ -56,8 +54,7 @@ contains
         ! further setup of pfasst data
         call pf_pfasst_setup(pf)
         ! start pfasst run
-        if(.not. present(tend)) tend_local = 0.0_pfdp
-        call pf_pfasst_run(pf, y_0, dt, tend_local, nsteps, y_end)
+        call pf_pfasst_run(pf, y_0, dt, 0.0_pfdp, nsteps, y_end)
     end subroutine run
 
     subroutine destroy()

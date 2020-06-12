@@ -59,18 +59,7 @@ typedef struct cpf_parameter_struct {
     char outdir[256];               //  Output directory
 } cpf_parameter_t;
 
-// Getters and setters for LibPFASST parameters
+// Getters and setters for LibPFASST parameters, must be called using a pointer to an allocated cpf_parameter_t
 // https://libpfasst.github.io/LibPFASST/docs/build/html/parameters.html
-
-/*
- * Function:  cpf_get_parameters
- * --------------------
- * Get a copy of current LibPFASST parameters
- *
- *  [in] prm: allocated memory for cpf_parameter_t
- *  [in] tend: end time of the run
- *  [in] nsteps: number of steps to run
- */
-void cpf_get_parameters(cpf_parameter_t** prm);
-
-void cpf_set_parameters(cpf_parameter_t** prm);
+void cpf_get_parameters(cpf_parameter_t* prm);
+void cpf_set_parameters(cpf_parameter_t* prm);

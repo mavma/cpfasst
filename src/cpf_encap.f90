@@ -184,6 +184,7 @@ contains
         real(pfdp),         intent(in)           :: z(:)
         integer,            intent(in), optional :: flags
         real(pfdp), pointer :: fptr(:)
+        
         call c_f_pointer(this%data, fptr, [size(z)])
         fptr = z
     end subroutine cpf_encap_unpack

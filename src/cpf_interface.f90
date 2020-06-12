@@ -10,33 +10,33 @@ contains
 
     ! C interfaces for cpf_main subroutines
 
-    subroutine cpf_initialize_pfasst(path, nlevels) bind(C)
-        character(c_char), intent(in), optional :: path(256)
-        integer(c_int),    intent(in), optional :: nlevels
+    subroutine cpf_initialize_from_nml(path) bind(C)
+        character(c_char), intent(in) :: path(256)
         character(256) :: f_path
 
-        if(present(path) .eqv. present(nlevels)) then
-            call oops(__FILE__, __LINE__, 'cpf_initialize must be called with either "path" or "nlevels" argument')
-        end if
         call c_f_string(path, f_path)
         call initialize(path=f_path)
-    end subroutine cpf_initialize_pfasst
+    end subroutine cpf_initialize_from_nml
+
+    subroutine cpf_initialize_from_nlevels(nlevels) bind(C)
+        integer(c_int), intent(in), value :: nlevels
+
+        call initialize(nlevels=nlevels)
+    end subroutine cpf_initialize_from_nlevels
 
     subroutine cpf_initialize_level(level_index, data_size) bind(C)
-        integer(c_int), intent(in) :: level_index
-        integer(c_int), intent(in) :: data_size
+        integer(c_int), intent(in), value :: level_index
+        integer(c_int), intent(in), value :: data_size
         call initialize_level(level_index, data_size)
     end subroutine cpf_initialize_level
 
-    subroutine cpf_run(dt, tend, nsteps) bind(C)
-        real(c_double), intent(inout)           :: dt
-        real(c_double), intent(in),    optional :: tend
-        integer(c_int), intent(in),    optional :: nsteps
+    subroutine cpf_run(dt, nsteps) bind(C)
+        real(c_double), intent(in), value :: dt
+        integer(c_int), intent(in), value :: nsteps
+        real(c_double) :: local_dt
 
-        if(present(tend) .eqv. present(nsteps)) then
-            call oops(__FILE__, __LINE__, 'cpf_run must be called with either "tend" or "nsteps" argument')
-        end if
-        call run(dt, tend=tend, nsteps=nsteps)
+        local_dt = dt
+        call run(local_dt, nsteps)
     end subroutine cpf_run
 
     subroutine cpf_destroy() bind(C)
@@ -46,28 +46,30 @@ contains
     ! Getters/setters for cpf_run variables
 
     subroutine cpf_set_parameters(param) bind(C)
-        type(c_ptr), intent(inout) :: param
+        type(c_ptr), intent(in), value :: param
         type(cpf_parameter_t), pointer :: param_fptr
         call c_f_pointer(param, param_fptr)
         call set_parameters(pf, param_fptr)
     end subroutine cpf_set_parameters
 
     subroutine cpf_get_parameters(param) bind(C)
-        type(c_ptr) :: param
+        type(c_ptr), intent(in), value :: param
         type(cpf_parameter_t), pointer :: param_fptr
         call c_f_pointer(param, param_fptr)
         call get_parameters(pf, param_fptr)
     end subroutine cpf_get_parameters
 
     subroutine cpf_set_initial_condition(data) bind(C)
-        type(c_ptr) :: data
+        type(c_ptr), intent(in), value :: data
         y_0%data = data
     end subroutine cpf_set_initial_condition
 
-    subroutine cpf_set_final_solution(data) bind(C)
-        type(c_ptr) :: data
+    subroutine cpf_set_solution_storage(data) bind(C)
+        type(c_ptr), intent(in), value :: data
         y_end%data = data
-    end subroutine cpf_set_final_solution
+    end subroutine cpf_set_solution_storage
+
+    ! getters for run states
 
     function cpf_get_current_solution(level_index) result(data) bind(C)
         integer(c_int), intent(in), value :: level_index

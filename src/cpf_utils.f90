@@ -4,22 +4,20 @@ module cpf_utils
 
 contains
 
-    ! Convert C string into Fortran string padded with empty spaces
+    ! Convert C string into Fortran string
     subroutine c_f_string(c_string, f_string)
         character(c_char), intent(in)  :: c_string(:)
         character(len=*),  intent(out) :: f_string
         integer :: c_strlen, i
 
         if(size(c_string) /= len(f_string)) call oops(__FILE__, __LINE__, 'Mismatched lengths in string conversion')
-        c_strlen = findloc(c_string, C_NULL_CHAR, 1)
+        c_strlen = findloc(c_string, C_NULL_CHAR, 1) - 1
         if(c_strlen == 0) call oops(__FILE__, __LINE__, 'C string must be null-terminated')
-        do i = 1, c_strlen
-            f_string(i:i) = c_string(i)
-        end do
-        f_string(c_strlen:) = ' '
+        f_string(1:c_strlen) = transfer(c_string(1:c_strlen), f_string(1:c_strlen))
+        f_string(c_strlen+1:) = ' '
     end subroutine c_f_string
 
-    ! Convert Fortran string padded with empty spaces into  C string
+    ! Convert Fortran string into  C string
     subroutine f_c_string(f_string, c_string)
         character(len=*),  intent(in)  :: f_string
         character(c_char), intent(out) :: c_string(:)
@@ -28,9 +26,7 @@ contains
         if(size(c_string) /= len(f_string)) call oops(__FILE__, __LINE__, 'Mismatched lengths in string conversion')
         f_strlen = len_trim(f_string)
         if(f_strlen == len(f_string)) call oops(__FILE__, __LINE__, 'Fortran string is too long for conversion')
-        do i = 1, f_strlen
-            c_string(i) = f_string(i:i)
-        end do
+        c_string(1:f_strlen) = transfer(f_string(1:f_strlen), c_string(1:f_strlen))
         c_string(f_strlen+1) = C_NULL_CHAR
     end subroutine f_c_string
 

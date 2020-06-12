@@ -33,5 +33,5 @@ typedef struct ex3_prm_struct {
     int nsteps;             // number of time steps
     int imex_stat;          // type of imex splitting: explicit(0), implicit(1) or imex(2)
     int ic_type;            // initial condition type
-    char pfasst_nml[128];   // file for reading pfasst parameters
+    char pfasst_nml[256];   // file for reading pfasst parameters
 } ex3_prm_t;
