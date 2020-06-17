@@ -8,7 +8,7 @@ IFLAGS := -Ilibfftpack -I$(CPFASST_DIR)/include
 LFLAGS := -Llibfftpack -lfftpack -L$(CPFASST_DIR)/build -lcpfasst
 
 main: $(addprefix $(BUILD_DIR)/,$(OBJ)) Makefile $(CPFASST_DIR)/build/libcpfasst.a | $(BUILD_DIR) cpfasst libfftpack
-	$(LDv) -o $@ $(filter-out Makefile,$^) $(LFLAGS) $(CLDFLAGS) $(FMPIFLAGS)
+	$(LDv) -o $@ $(filter-out Makefile,$^) $(LFLAGS) $(LDFLAGS) $(FMPIFLAGS)
 
 $(BUILD_DIR):
 	@mkdir $@

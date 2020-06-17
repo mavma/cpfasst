@@ -49,9 +49,7 @@ void load_local_parameters(char *fname) {
 
     char *line = NULL;
     size_t len = 0;
-    size_t read;
-    int nx_pos;
-    while((read = getline(&line, &len, f)) != EOF) {
+    while(getline(&line, &len, f) != EOF) {
         if(try_parse_nml(line, "v", "lf", &ex3_prm.v)) continue;
         else if(try_parse_nml(line, "nu", "lf", &ex3_prm.nu)) continue;
         else if(try_parse_nml(line, "kfreq", "lf", &ex3_prm.kfreq)) continue;

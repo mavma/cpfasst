@@ -35,7 +35,7 @@ double compute_error(user_data_t* y, double t) {
     user_data_t* exact = ex3_data_create(y->nx);
     compute_exact_solution(exact, t);
     double max = 0;
-    for(int i = 0; i < y->nx; i++) {
+    for(size_t i = 0; i < y->nx; i++) {
         double abs = fabs(y->arr[i] - exact->arr[i]);
         max = (abs > max) ? abs : max;
     }

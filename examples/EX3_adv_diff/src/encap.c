@@ -46,7 +46,7 @@ void cpf_factory_destroy_cb(user_data_t* data) {
 }
 
 void cpf_encap_setval_cb(user_data_t* data, double value) {
-    for(int i = 0; i < data->nx; i++) data->arr[i] = value;
+    for(size_t i = 0; i < data->nx; i++) data->arr[i] = value;
 }
 
 void cpf_encap_copy_cb(user_data_t* dst, user_data_t* src) {
@@ -56,7 +56,7 @@ void cpf_encap_copy_cb(user_data_t* dst, user_data_t* src) {
 
 double cpf_encap_norm_cb(user_data_t* data) {
     double max = 0;
-    for(int i = 0; i < data->nx; i++) {
+    for(size_t i = 0; i < data->nx; i++) {
         double abs = fabs(data->arr[i]);
         max = (abs > max) ? abs : max;
     }
@@ -66,12 +66,12 @@ double cpf_encap_norm_cb(user_data_t* data) {
 void cpf_encap_axpy_cb(user_data_t* y, double a, user_data_t* x) {
     assert(y->nx == x->nx);
     if(a == 0) return;
-    for(int i = 0; i < y->nx; i++) y->arr[i] += a * x->arr[i];
+    for(size_t i = 0; i < y->nx; i++) y->arr[i] += a * x->arr[i];
 }
 
 void cpf_encap_eprint_cb(user_data_t* data) {
     // logs 5 first and 5 last array members
-    for(int i = 0; i < 5; i++) printf("%.16E ", data->arr[i]);
-    for(int i = data->nx-5; i < data->nx; i++) printf("%.16E ", data->arr[i]);
+    for(size_t i = 0; i < 5; i++) printf("%.16E ", data->arr[i]);
+    for(size_t i = data->nx-5; i < data->nx; i++) printf("%.16E ", data->arr[i]);
     printf("\n");
 }

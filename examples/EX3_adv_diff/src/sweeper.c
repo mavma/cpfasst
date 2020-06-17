@@ -94,7 +94,7 @@ void cpf_imex_sweeper_f_comp_cb(user_data_t* y, double t, double dtq, user_data_
 
     if(ex3_prm.imex_stat == 0) {
         // fully explicit TODO:necessary? test
-        for(int i=0; i < y->nx; i++) {
+        for(size_t i=0; i < y->nx; i++) {
             y->arr[i] = rhs->arr[i];
             f->arr[i] = 0;
         }
@@ -102,9 +102,9 @@ void cpf_imex_sweeper_f_comp_cb(user_data_t* y, double t, double dtq, user_data_
     }
 
     // Apply the inverse operator with the FFT convolution
-    for(int i=0; i < y->nx; i++) this->tmp[i] = 1.0/(1.0 - dtq*this->opI[i]);
+    for(size_t i=0; i < y->nx; i++) this->tmp[i] = 1.0/(1.0 - dtq*this->opI[i]);
     conv_1d(this->fft_tool, rhs->arr, this->tmp, y->arr);
-    for(int i=0; i < y->nx; i++) f->arr[i] = (y->arr[i] - rhs->arr[i]) / dtq;
+    for(size_t i=0; i < y->nx; i++) f->arr[i] = (y->arr[i] - rhs->arr[i]) / dtq;
 
     return;
 }

@@ -29,5 +29,5 @@ void cpf_level_restrict_cb(int f_level_index, int c_level_index, user_data_t* f_
     assert(f_data->nx == irat * c_data->nx); // ratio is integer
 
     // pointwise coarsening
-    for(int i=0; i<c_data->nx; i++) c_data->arr[i] = f_data->arr[i*irat];
+    for(size_t i=0; i<c_data->nx; i++) c_data->arr[i] = f_data->arr[i*irat];
 }
