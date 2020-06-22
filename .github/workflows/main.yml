@@ -30,8 +30,9 @@ jobs:
           mpirun --version
       - name: Compile
         run: |
-          cd examples/${{ matrix.tutorial }}
-          make V=1 GCC10=FALSE MPI=${{ matrix.mpi }}
+          mkdir build && cd build
+          cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..
+          make ${{ matrix.tutorial }}
       - name: Run sequential
         run: ./tests/run_example.sh ${{ matrix.tutorial }}
       - name: Run parallel
