@@ -2,6 +2,14 @@
 
 ![test](https://github.com/mavma/cpfasst/workflows/test/badge.svg?branch=master)
 
+<img src="https://user-images.githubusercontent.com/33549598/87848455-05e03d00-c8e1-11ea-95f7-12b886fd2fcd.jpg" alt="drawing" width="200"/>
+
+## Here from the [thesis](https://github.com/mavma/cpfasst-thesis)?
+
+This repository still needs some work! It will be fit for public consumption by Aug 15. Until then, [ex3](https://github.com/mavma/cpfasst/tree/ex3) is the branch closest to the final interface.
+
+
+
 ### Run the program
 
 #### Clone and initialize submodules
