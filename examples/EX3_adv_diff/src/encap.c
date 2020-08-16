@@ -70,7 +70,7 @@ void cpf_encap_axpy_cb(encap_data_t* y, double a, encap_data_t* x) {
 }
 
 void cpf_encap_eprint_cb(encap_data_t* data) {
-    // logs 5 first and 5 last array members
+    // prints 5 first and 5 last array members
     for(size_t i = 0; i < 5; i++) printf("%.16E ", data->arr[i]);
     for(size_t i = data->nx-5; i < data->nx; i++) printf("%.16E ", data->arr[i]);
     printf("\n");
