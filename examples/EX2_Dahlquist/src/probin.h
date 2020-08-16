@@ -1,3 +1,5 @@
 #pragma once
 
-void load_local_parameters(char *fname);
+#include "types.h"
+
+ex2_prm_t load_local_parameters(char* nml_path);

@@ -16,7 +16,7 @@ void cpf_initialize_from_nml(char nml_file_path[256]);
 // Initialize PFASST with default values for nlevels levels
 void cpf_initialize_from_nlevels(int nlevels);
 
-// Allocate and initialize user levels and related structures. Must be called once for every pfasst level.
+// Allocate and initialize user levels and related structures. Must be called once for every PFASST level.
 void cpf_initialize_level(int level_index, int data_size);
 
 // Run the main pfasst loop with step size dt for nsteps steps
@@ -26,13 +26,13 @@ void cpf_run(double dt, int nsteps);
 void cpf_destroy();
 
 // Set initial condition for run
-void cpf_set_initial_condition(user_data_t* data);
+void cpf_set_initial_condition(encap_data_t* data);
 
 // Set address for storage of solution
-void cpf_set_solution_storage(user_data_t* data);
+void cpf_set_solution_storage(encap_data_t* data);
 
 // Get pointer to current solution at given level
-user_data_t* cpf_get_current_solution(int level_index);
+encap_data_t* cpf_get_current_solution(int level_index);
 
 // Get time at current endpoint
 double cpf_get_endpoint_time();

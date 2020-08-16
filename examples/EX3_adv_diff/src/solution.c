@@ -24,15 +24,15 @@ void exact_ad_cos_1ds(double t, double y[], int nx, double nu, double v, double 
 }
 
 // compute exact solution at time t
-void compute_exact_solution(user_data_t* y, double t) {
+void compute_exact_solution(encap_data_t* y, double t) {
     assert(ex3_prm.ic_type == 1);
     exact_ad_cos_1ds(t, y->arr, y->nx, ex3_prm.nu, ex3_prm.v, ex3_prm.kfreq, ex3_prm.Lx);
 }
 
 // compute error for given solution at time t
-double compute_error(user_data_t* y, double t) {
+double compute_error(encap_data_t* y, double t) {
     assert(ex3_prm.ic_type == 1);
-    user_data_t* exact = ex3_data_create(y->nx);
+    encap_data_t* exact = ex3_data_create(y->nx);
     compute_exact_solution(exact, t);
     double max = 0;
     for(size_t i = 0; i < y->nx; i++) {

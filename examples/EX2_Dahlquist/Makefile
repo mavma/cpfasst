@@ -1,29 +1,35 @@
-cpfasst_dir ?= ../..
-libpfasst_dir ?= $(cpfasst_dir)/LibPFASST
-include $(cpfasst_dir)/common.mk
+CPFASST_DIR = ../..
+include $(CPFASST_DIR)/common.mk
 
-main:
+BUILD_DIR = build
+#OBJ = sweeper.o encap.o hooks.o level.o probin.o main.o
+OBJ = probin.o main.o
 
-build_dir = build
-obj = sweeper.o encap.o hooks.o level.o probin.o main.o
--include ${obj:%.o=${build_dir}/%.d}
+IFLAGS := -I$(CPFASST_DIR)/include
+LFLAGS := -L$(CPFASST_DIR)/build -lcpfasst
 
-main: $(addprefix $(build_dir)/,$(obj)) Makefile | $(build_dir)
-	$(CC) -o $@ $(filter-out Makefile,$^) $(CLDFLAGS) $(FMPIFLAGS)
+main: $(addprefix $(BUILD_DIR)/,$(OBJ)) Makefile $(CPFASST_DIR)/build/libcpfasst.a | $(BUILD_DIR) cpfasst
+	$(LDv) -o $@ $(filter-out Makefile,$^) $(LFLAGS) $(LDFLAGS) $(FMPIFLAGS)
 
-$(build_dir):
+$(BUILD_DIR):
 	@mkdir $@
 
-$(build_dir)/%.o: src/%.c Makefile | $(build_dir) cpfasst
-	$(CC) -c -o $@ -MD -MP $(CFLAGS) $<
+$(BUILD_DIR)/%.o: src/%.c Makefile | $(BUILD_DIR) cpfasst
+	$(CCv) -c -o $@ -MD -MP $(CFLAGS) $(IFLAGS) $<
 
+-include ${OBJ:%.o=${BUILD_DIR}/%.d}
+
+Makefile: $(CPFASST_DIR)/common.mk
+	@touch Makefile
+
+.PHONY: cpfasst
 cpfasst:
-	cd ../..; $(MAKE)
+	@cd $(CPFASST_DIR); $(MAKE)
 
+.PHONY: all
 all: main
 
+.PHONY: clean
 clean:
 	\rm -f main
 	\rm -rf build
-
-.PHONY: clean all cpfasst

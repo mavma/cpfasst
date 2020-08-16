@@ -73,7 +73,7 @@ void cpf_imex_sweeper_destroy_cb(int level_index) {
     free(this);
 }
 
-void cpf_imex_sweeper_f_eval_cb(user_data_t* y, double t, int level_index, user_data_t* f, int piece) {
+void cpf_imex_sweeper_f_eval_cb(encap_data_t* y, double t, int level_index, encap_data_t* f, int piece) {
     ex3_sweeper_t *this = sweepers[level_index-1];
 
     switch(piece) {
@@ -89,7 +89,7 @@ void cpf_imex_sweeper_f_eval_cb(user_data_t* y, double t, int level_index, user_
     return;
 }
 
-void cpf_imex_sweeper_f_comp_cb(user_data_t* y, double t, double dtq, user_data_t* rhs, int level_index, user_data_t* f) {
+void cpf_imex_sweeper_f_comp_cb(encap_data_t* y, double t, double dtq, encap_data_t* rhs, int level_index, encap_data_t* f) {
     ex3_sweeper_t *this = sweepers[level_index-1];
 
     if(ex3_prm.imex_stat == 0) {

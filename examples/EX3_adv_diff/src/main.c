@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     // load local parameters from nml file
     load_local_parameters(input_nml);
 
-    // initialize libpfasst parameters from nml file
+    // initialize LibPFASST parameters from nml file
     cpf_initialize_from_nml(ex3_prm.pfasst_nml);
 
     // get libpfasst parameters
