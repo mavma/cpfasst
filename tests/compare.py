@@ -54,8 +54,8 @@ def compare_results(dir1, dir2, show_diff=False):
             for file in bad_files:
                 print('Difference in file ' + file)
                 diff = subprocess.run(['diff', os.path.join(dir1, file), os.path.join(dir2, file)],
-                                      capture_output=True)
-                print(diff.stdout.decode("utf-8"))
+                                      capture_output=True, text=True)
+                print(diff.stdout)
         else:
             print('Found differences in files:\n   ' + '\n   '.join(bad_files))
         sys.exit(1)
@@ -63,13 +63,14 @@ def compare_results(dir1, dir2, show_diff=False):
         print('Results are equal')
 
 
-parser = argparse.ArgumentParser(description='Compare the outputs of two runs of a LibPFASST example')
-parser.add_argument('dir1')
-parser.add_argument('dir2')
-parser.add_argument('--show-diff', action='store_true', help='show diff for mismatched files')
-args = parser.parse_args()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Compare the outputs of two runs of a LibPFASST example')
+    parser.add_argument('dir1')
+    parser.add_argument('dir2')
+    parser.add_argument('--show-diff', action='store_true', help='show diff for mismatched files')
+    args = parser.parse_args()
 
-compare_results(args.dir1, args.dir2, args.show_diff)
+    compare_results(args.dir1, args.dir2, args.show_diff)
 
 
 

@@ -2,3 +2,5 @@
 **/dat/
 **/lib/
 **/main
+**/__pycache__
+.idea

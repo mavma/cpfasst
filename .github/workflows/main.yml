@@ -1,4 +1,4 @@
-name: test
+name: Test cpfasst
 
 on: [push]
 
@@ -18,25 +18,26 @@ jobs:
           auth_header="$(git config --local --get http.https://github.com/.extraheader)"
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-      - name: Setup mpich
+      - name: Setup MPI (mpich)
         if: matrix.mpi == 'mpich'
-        run: |
-          sudo apt-get -y install mpich
-          mpirun --version
-      - name: Setup openmpi
+        run: sudo apt-get -y install mpich
+      - name: Setup MPI (OpenMPI)
         if: matrix.mpi == 'openmpi'
+        run: sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev
+      - name: Print versions
         run: |
-          sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev
-          mpirun --version
-      - name: Compile
-        run: |
-          cd examples/${{ matrix.tutorial }}
-          make V=1 GCC10=FALSE MPI=${{ matrix.mpi }}
-      - name: Run sequential
-        run: ./tests/run_example.sh ${{ matrix.tutorial }}
-      - name: Run parallel
-        run: ./tests/run_example.sh -n 4 ${{ matrix.tutorial }}
+          python3 --version
+          mpiexec --version
+          mpicc -v
+      - name: Compile cpfasst example
+        run: (cd examples/${{ matrix.tutorial }} && make V=1 GCC10=FALSE MPI=${{ matrix.mpi }})
+      - name: Compile LibPFASST tutorials
+        run: make V=1 GCC10=FALSE MPI=${{ matrix.mpi }} libpfasst_examples
       - name: Test sequential
-        run: |
-          make -C LibPFASST/Tutorials/${{ matrix.tutorial }}
-          ./tests/test_example.sh ${{ matrix.tutorial }}
+        run: ./tests/test_and_run.py ${{ matrix.tutorial }}
+      - name: Test parallel (mpich)
+        if: matrix.mpi == 'mpich'
+        run: ./tests/test_and_run.py --np 4 ${{ matrix.tutorial }}
+      - name: Test parallel (OpenMPI)
+        if: matrix.mpi == 'openmpi'
+        run: ./tests/test_and_run.py --np 4 ${{ matrix.tutorial }} --mpiargs="--oversubscribe"
