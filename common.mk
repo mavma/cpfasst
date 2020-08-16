@@ -1,28 +1,59 @@
-MPI_BIN ?= /opt/mpich/bin
+CPFASST_DIR ?= $(PWD)
+LIBPFASST_DIR := $(CPFASST_DIR)/LibPFASST
 
-CC = $(MPI_BIN)/mpicc
-FC = $(MPI_BIN)/mpif90
+CC := mpicc
+FC := mpifort
+LD := mpicc
 AR = ar rcs
 
-DEBUG = TRUE
+# enables gcc10-only flag to allow compiling LibPFASST
+GCC10 ?= TRUE
+# supported: mpich, openmpi
+MPI ?= mpich
 
-# C compiler & linker flags
-CFLAGS = -I$(CPFASST)/include -O3
-CLDFLAGS = -L$(CPFASST)/lib -lcpfasst -L$(LIBPFASST)/lib -lpfasst -lgfortran -lquadmath -lm -ldl
-
-# Fortran compiler & linker flags
-FFLAGS = -ILibPFASST/include -cpp -O3
+# C compiler flags
+CFLAGS := -std=gnu17 -Wall -Wpedantic -Wextra -Wno-unused-parameter
+# Fortran compiler flags
+FFLAGS := -I$(LIBPFASST_DIR)/include -cpp
 FFLAGS += -fcheck=all -fbacktrace -ffpe-trap=invalid,zero,overflow -fbounds-check -fimplicit-none -ffree-line-length-none
-FLDFLAGS = -LLibPFASST/lib -lpfasst
+# Linker flags
+LDFLAGS := -L$(LIBPFASST_DIR)/lib -lpfasst -lgfortran -lquadmath -lm -ldl
 
 # MPI linking flags
-# Uncomment next line for OpenMPI
-# FMPIFLAGS += $(shell mpif90 --showme:link)
-# Uncomment next line for mpich
+ifeq ($(MPI),mpich)
 FMPIFLAGS += $(wordlist 2, 999, $(shell $(FC) -link_info))
+else ifeq ($(MPI),openmpi)
+FMPIFLAGS += $(shell mpif90 --showme:link)
+endif
 
+# TODO: change default
 # debug flags
+DEBUG ?= TRUE
 ifeq ($(DEBUG),TRUE)
 CFLAGS += -g -O0
 FFLAGS += -g -O0
+else
+CFLAGS += -O3 -flto
+FFLAGS += -O3 -flto
+LDFLAGS += -flto
 endif
+
+# strict checks on memory access - does not work under gdb
+ASAN ?= 0
+ifeq ($(ASAN),1)
+CFLAGS += -fsanitize=address
+FFLAGS += -fsanitize=address
+LDFLAGS += -fsanitize=address
+endif
+
+# control verbosity
+V ?= 0
+ifeq ($(V),0)
+CC_MSG = @echo "Compiling $<...";
+LD_MSG = @echo "Linking $@...";
+AR_MSG = @echo "Creating archive $@...";
+endif
+CCv = $(CC_MSG)$(CC)
+FCv = $(CC_MSG)$(FC)
+LDv = $(LD_MSG)$(LD)
+ARv = $(AR_MSG)$(AR)

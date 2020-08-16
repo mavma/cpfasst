@@ -1,3 +1,8 @@
 [submodule "LibPFASST"]
 	path = LibPFASST
-	url = https://github.com/libpfasst/LibPFASST.git
+	url = https://github.com/mavma/LibPFASST.git
+	ignore = untracked
+[submodule "examples/EX3_adv_diff/libfftpack"]
+	path = examples/EX3_adv_diff/libfftpack
+	url = https://github.com/dagss/libfftpack.git
+	ignore = untracked

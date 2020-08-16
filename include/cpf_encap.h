@@ -1,18 +1,27 @@
+// Callback functions that must be defined by the user for the data encapsulation
+
 #pragma once
 
 #include <stddef.h>
+#include "cpf_static.h"
 
-// Allocate data
-void factory_create_cb(void** data, int* level_index, int** lev_shape, int* lev_shape_len);
-// Free data
-void factory_destroy_cb(void** data);
-// Set data = value
-void encap_setval_cb(void** data, double* value, int* flags);
-// Copy src to data
-void encap_copy_cb(void** data, void** src, int* flags);
-// Compute norm(data)
-double encap_norm_cb(void** data, int* flags);
-// Compute y = a x + y
-void encap_axpy_cb(void** y, double* a, void** x, int* flags);
-// Print data
-void encap_eprint_cb(void** data, int* flags);
+// Allocate user-defined data for a level (1-based index)
+void cpf_factory_create_cb(user_data_t** data, int level_index);
+
+// Deallocate user-defined data
+void cpf_factory_destroy_cb(user_data_t* data);
+
+// Set data to provided scalar value
+void cpf_encap_setval_cb(user_data_t* data, double value);
+
+// Copy src to dst
+void cpf_encap_copy_cb(user_data_t* dst, user_data_t* src);
+
+// Compute norm
+double cpf_encap_norm_cb(user_data_t* data);
+
+// Compute y = a*x+y
+void cpf_encap_axpy_cb(user_data_t* y, double a, user_data_t* x);
+
+// Print data to standard output (for debugging purposes)
+void cpf_encap_eprint_cb(user_data_t* data);

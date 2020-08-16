@@ -40,6 +40,6 @@ for nml in "${inputs[@]}"; do
   (cd "$PATH_CPF" && mpiexec -n "$np" ./main "$CPF_TO_LPF/$nml.nml") > $output
   if $run_lpf ; then
     echo "Running $PATH_LPF with input  $nml.nml"
-     (cd "$PATH_LPF" && mpiexec -n "$np" ./main.exe "$nml.nml") > $output
+     (cd "$PATH_LPF" && mpiexec -n "$np" ./main.exe "$nml.nml" outdir=\"outdir\") > $output
   fi
 done

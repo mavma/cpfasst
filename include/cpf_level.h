@@ -1,9 +1,10 @@
 # pragma once
 
-// Restriction and interpolation callbacks
-//   f_lev_idx, c_lev_idx: index of fine and coarse levels
-//   f_vec, c_vec: pointers to data for fine and coarse levels
-//   t: solution time
-//   flags: unused
-void level_interpolate_cb(int* f_lev_idx, int* c_lev_idx, void** f_vec, void** c_vec, double* t, int* flags);
-void level_restrict_cb(int* f_lev_idx, int* c_lev_idx, void** f_vec, void** c_vec, double* t, int* flags);
+# include "cpf_static.h"
+
+// Multilevel restriction and interpolation callbacks
+//   f_level_index, *f_data: index and data of fine level
+//   c_level_index, *c_data: index and data of coarse level
+//   t: time
+void cpf_level_interpolate_cb(int f_level_index, int c_level_index, user_data_t* f_data, user_data_t* c_data, double t);
+void cpf_level_restrict_cb(int f_level_index, int c_level_index, user_data_t* f_data, user_data_t* c_data, double t);

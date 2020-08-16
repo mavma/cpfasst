@@ -1,38 +1,55 @@
-FSRC = cpf_encap.f90 cpf_imex_sweeper.f90 cpf_level.f90 cpf_interface.f90
-BUILDDIR = build
-SRCDIR = src
+include common.mk
 
-CPFASST ?= $(PWD)
-include $(CPFASST)/common.mk
+build_dir = build
+obj = cpf_utils.o cpf_encap.o cpf_imex_sweeper.o cpf_level.o cpf_parameters.o cpf_main.o cpf_interface.o
 
-OBJ  = $(addprefix $(BUILDDIR)/,$(FSRC:.f90=.o))
+cpfasst: $(build_dir)/libcpfasst.a
 
-lib/libcpfasst.a: $(OBJ)
-	@mkdir -p lib
-	$(AR) $@ $(OBJ)
+$(build_dir)/libcpfasst.a: $(addprefix $(build_dir)/,$(obj)) Makefile | $(build_dir) libpfasst
+	$(ARv) $@ $(filter-out Makefile,$^)
 
-$(BUILDDIR)/%.o: $(SRCDIR)/%.f90
-	@mkdir -p $(BUILDDIR)
-	$(FC) -c -o $@ -J$(BUILDDIR) $< $(FFLAGS)
+$(build_dir):
+	@mkdir $@
 
-$(OBJ): libpfasst
+$(build_dir)/%.o: src/%.f90 Makefile | $(build_dir) libpfasst
+	$(FCv) -c -o $@ -J$(build_dir) -MD -MP $(FFLAGS) $<
 
+$(build_dir)/%.o: src/%.c Makefile | $(build_dir) libpfasst
+	$(CCv) -c -o $@ -MD -MP $(CFLAGS) $<
+
+-include ${obj:%.o=${build_dir}/%.d}
+
+Makefile: common.mk
+	@touch Makefile
+
+.PHONY: libpfasst
 libpfasst:
-	cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	@cd LibPFASST; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC) GCC10=$(GCC10)
 
-libpfasst_examples: libpfasst
-	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
-	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
-	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+.PHONY: libpfasst_examples
+libpfasst_examples: | libpfasst
+	@cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	@cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
+	@cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) DEBUG=TRUE MKVERBOSE=TRUE FC=$(FC) CC=$(CC)
 
-all: lib/libcpfasst.a libpfasst_examples
+.PHONY: examples
+examples: | cpfasst libpfasst
+	@cd examples/EX2_Dahlquist; $(MAKE)
+	@cd examples/EX3_adv_diff; $(MAKE)
 
+.PHONY: clean
 clean:
-	\rm -r lib
-	\rm -r build
+	\rm -rf build
 
+.PHONY: clean_all
 clean_all: clean
+	cd examples/EX2_Dahlquist; $(MAKE) clean
+	cd examples/EX3_adv_diff; $(MAKE) clean
 	cd LibPFASST; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX1_Dahlquist; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX2_Dahlquist; $(MAKE) clean
 	cd LibPFASST/Tutorials/EX3_adv_diff; $(MAKE) clean
+
+.PHONY: all
+all: cpfasst examples libpfasst libpfasst_examples
+

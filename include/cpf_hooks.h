@@ -1,35 +1,15 @@
 #pragma once
 
-typedef enum {
-    PF_PRE_PREDICTOR     = 1,
-    PF_POST_PREDICTOR    = 2,
-    PF_PRE_ITERATION     = 3,
-    PF_POST_ITERATION    = 4,
-    PF_PRE_SWEEP         = 5,
-    PF_POST_SWEEP        = 6,
-    PF_PRE_BLOCK         = 7,
-    PF_POST_BLOCK        = 8,
-    PF_PRE_INTERP_ALL    = 9,
-    PF_POST_INTERP_ALL   = 10,
-    PF_PRE_INTERP_Q0     = 11,
-    PF_POST_INTERP_Q0    = 12,
-    PF_PRE_RESTRICT_ALL  = 13,
-    PF_POST_RESTRICT_ALL = 14,
-    PF_PRE_CONVERGENCE   = 15,
-    PF_POST_CONVERGENCE  = 16,
-    PF_POST_ALL          = 17
-} cpf_hooks_t;
+#include <cpf_static.h>
 
-// Adds a custom hook to a C callback
-//      level_index: the level to add the hook for, -1 for all levels
-//      hook: which type of hook to add
-//      callback: pointer to callback function with the following signature:
-//          void my_callback(void* pf, int* idx)
-//              pf: opaque data structure which SHOULD NOT BE MODIFIED
-//              idx: level the callback was called for
-void cpf_add_custom_hook(int* level_index, cpf_hooks_t* hook, void(**callback)(void*,int*));
+// Typedef for user-defined hook callback functions
+//   *pf: opaque data structure which MUST NOT BE MODIFIED
+//   *level_index: index of level which triggered the callback
+typedef void(*cpf_hook_cb_t)(void* pf, int* level_index);
 
-// Adds hook to the LibPFASST-provided echo_residual function
-//      level_index: the level to add the hook for, -1 for all levels
-//      hook: which type of hook to add
-void cpf_add_echo_residual_hook(int* level_index, cpf_hooks_t* hook);
+// Add a custom hook to a level for a certain condition, triggering a call to a user-defined callback function
+// Use level_index = -1 to set for all levels.
+void cpf_add_custom_hook(int level_index, cpf_hooks_t hook, cpf_hook_cb_t callback);
+
+// Can be called from a hook callback to set the error value for a level at the current run state
+void cpf_set_error(int level_index, double error);
