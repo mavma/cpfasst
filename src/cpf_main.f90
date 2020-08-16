@@ -2,7 +2,7 @@
 module cpf_main
     use pfasst
     use pf_mod_mpi
-    use cpf_level
+    use cpf_user_level
     use cpf_encap
     use cpf_imex_sweeper
     use cpf_utils
@@ -29,7 +29,7 @@ contains
         real(pfdp) :: dummy ! for sizeof purposes
 
         ! allocate level object
-        allocate(cpf_level_t::pf%levels(l)%ulevel)
+        allocate(cpf_user_level_t::pf%levels(l)%ulevel)
         ! allocate data constructor
         allocate(cpf_factory::pf%levels(l)%ulevel%factory)
         ! allocate sweeper

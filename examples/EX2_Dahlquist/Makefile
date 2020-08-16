@@ -3,7 +3,7 @@ include $(CPFASST_DIR)/common.mk
 
 BUILD_DIR = build
 #OBJ = sweeper.o encap.o hooks.o level.o probin.o main.o
-OBJ = shared.o sweeper.o probin.o main.o
+OBJ = level.o shared.o sweeper.o probin.o main.o
 
 IFLAGS := -I$(CPFASST_DIR)/include
 LFLAGS := -L$(CPFASST_DIR)/build -lcpfasst
