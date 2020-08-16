@@ -34,10 +34,10 @@ jobs:
       - name: Compile LibPFASST tutorials
         run: make V=1 GCC10=FALSE MPI=${{ matrix.mpi }} libpfasst_examples
       - name: Test sequential
-        run: ./tests/test_and_run.py ${{ matrix.tutorial }}
+        run: ./tests/test_example.py ${{ matrix.tutorial }}
       - name: Test parallel (mpich)
         if: matrix.mpi == 'mpich'
-        run: ./tests/test_and_run.py --np 4 ${{ matrix.tutorial }}
+        run: ./tests/test_example.py --np 4 ${{ matrix.tutorial }}
       - name: Test parallel (OpenMPI)
         if: matrix.mpi == 'openmpi'
-        run: ./tests/test_and_run.py --np 4 ${{ matrix.tutorial }} --mpiargs="--oversubscribe"
+        run: ./tests/test_example.py --np 4 ${{ matrix.tutorial }} --mpiargs="--oversubscribe"
