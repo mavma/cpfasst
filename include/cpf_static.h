@@ -1,6 +1,8 @@
-#pragma once
+/** @file cpf_static.h
+ * Static parameters mirroring LibPFASST settings
+ */
 
-// Static parameters - must always match LibPFASST
+#pragma once
 
 #define PF_MAXLEVS 4
 

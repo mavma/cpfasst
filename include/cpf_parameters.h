@@ -1,7 +1,12 @@
+/** @file cpf_parameters.h
+ * C interfaces allowing getting and setting of LibPFASST parameters
+ * For parameter documentation refer to https://libpfasst.github.io/LibPFASST/docs/build/html/parameters.html
+ */
+
 #pragma once
 
 #include <stdbool.h>
-#include "cpf_static.h"
+#include <cpf_static.h>
 
 typedef struct cpf_parameter_struct {
     // === Mandatory pfasst parameters (must be set during initialization, cannot be changed)  ===
@@ -59,7 +64,14 @@ typedef struct cpf_parameter_struct {
     char outdir[256];               //  Output directory
 } cpf_parameter_t;
 
-// Getters and setters for LibPFASST parameters, must be called using a pointer to an allocated cpf_parameter_t
-// https://libpfasst.github.io/LibPFASST/docs/build/html/parameters.html
+/**
+ * Get LibPFASST parameters
+ * @param[out] prm Parameter structure (pre-allocated)
+ */
 void cpf_get_parameters(cpf_parameter_t* prm);
+
+/**
+ * Set LibPFASST parameters
+ * @param[in] prm Parameter structure
+ */
 void cpf_set_parameters(cpf_parameter_t* prm);

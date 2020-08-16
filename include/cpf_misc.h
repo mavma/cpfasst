@@ -14,3 +14,10 @@ encap_data_t* cpf_get_current_solution(int level_index);
  * Get time at current endpoint
  */
 double cpf_get_endpoint_time();
+
+/**
+ * Set the error value for a level at the current run state
+ * @param[in] level_index Index (1-based) of the level
+ * @param[in] error
+ */
+void cpf_set_error(int level_index, double error);
