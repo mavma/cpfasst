@@ -1,6 +1,6 @@
 # cpfasst
 
-![test](https://github.com/mavma/cpfasst/workflows/test/badge.svg?branch=master)
+![test](https://github.com/mavma/cpfasst/workflows/cpfasst_test/badge.svg?branch=master)
 
 <img src="https://user-images.githubusercontent.com/33549598/87848455-05e03d00-c8e1-11ea-95f7-12b886fd2fcd.jpg" alt="drawing" width="200"/>
 

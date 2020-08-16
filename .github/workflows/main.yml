@@ -1,4 +1,4 @@
-name: Test cpfasst
+name: cpfasst_test
 
 on: [push]
 
