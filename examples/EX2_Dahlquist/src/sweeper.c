@@ -16,7 +16,7 @@ void cpf_imex_sweeper_f_eval_cb(encap_data_t* y, double t, int level_index, enca
             f->val = ex2_prm.lam1 * y->val;
             break;
         case 2: // Implicit piece
-            f->val = ex2_prm.lam1 * y->val;
+            f->val = ex2_prm.lam2 * y->val;
             break;
         default:
             printf("Bad case for piece in f_eval: %d", piece);
