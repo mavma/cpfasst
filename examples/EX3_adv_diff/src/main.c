@@ -7,6 +7,7 @@
 #include <cpf_imex_sweeper.h>
 #include <cpf_parameters.h>
 #include <cpf_hooks.h>
+#include <cpf_misc.h>
 #include "utils.h"
 #include "shared.h"
 #include "probin.h"

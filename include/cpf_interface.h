@@ -1,39 +1,66 @@
+/** @file cpf_interface.h
+ * C interfaces to mandatory LibPFASST functions
+ * Mandatory calls must occur in this order:
+ * 1. MPI_Initialize
+ * 2. cpf_initialize_from_* (choose one variant)
+ * 3. for each level: cpf_initialize_level
+ * 4. cpf_set_initial_condition
+ * 5. cpf_set_solution_storage
+ * 6. cpf_run
+ * 7. cpf_destroy
+ */
+
 #pragma once
 
-#include "cpf_parameters.h"
+//#include "cpf_parameters.h"
 
-// Mandatory function calls for a cpfasst run (in this order):
-//
-// 0. MPI_Initialize(...)
-// 1. cpf_initialize_...(...) -> allocate and initialize parameter structures
-// 2. for each level: cpf_allocate_level(...) -> allocate and initialize levels
-// 3. cpf_run_...(...) -> trigger pfasst main loop
-// 4. cpf_destroy(...) -> free Fortran-allocated memory
-
-// Initialize PFASST with values the provided nml file
+/**
+ * Initialize LibPFASST with values from the provided nml file
+ * @param[in] nml_file_path
+ */
 void cpf_initialize_from_nml(char nml_file_path[256]);
 
-// Initialize PFASST with default values for nlevels levels
+/**
+ * Initialize LibPFASST with default values for a given number of levels
+ * @param[in] nlevels
+ */
 void cpf_initialize_from_nlevels(int nlevels);
 
-// Allocate and initialize user levels and related structures. Must be called once for every PFASST level.
+/**
+ * Initialize one level and set its data size
+ * Must be called once for every PFASST level
+ * @param[in] level_index Index (1-based) of the level
+ * @param[in] data_size Size in bytes of the user data associated with this level
+ */
 void cpf_initialize_level(int level_index, int data_size);
 
-// Run the main pfasst loop with step size dt for nsteps steps
-void cpf_run(double dt, int nsteps);
-
-// Free Fortran-allocated memory
-void cpf_destroy();
-
-// Set initial condition for run
+/**
+ * Set initial condition for the run
+ * @param[in] data Initial condition
+ */
 void cpf_set_initial_condition(encap_data_t* data);
 
-// Set address for storage of solution
+/**
+ * Set address where LibPFASST will store the final solution
+ * @param[in] data Pre-allocated memory for solution storage
+ */
 void cpf_set_solution_storage(encap_data_t* data);
 
-// Get pointer to current solution at given level
-encap_data_t* cpf_get_current_solution(int level_index);
+/**
+ * Run the main pfasst loop
+ * @param[in] dt Step size
+ * @param[in] nsteps Total number of steps
+ */
+void cpf_run(double dt, int nsteps);
 
-// Get time at current endpoint
-double cpf_get_endpoint_time();
+/**
+ * Free memory allocated by LibPFASST
+ */
+void cpf_destroy();
+
+
+
+
+
+
 

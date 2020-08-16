@@ -1,5 +1,5 @@
 /** @file cpf_imex_sweeper.h
- * Callback interface for LibPFASST's pf_imex_sweeper
+ * C callback interface for LibPFASST's pf_imex_sweeper
  * Sweeper for equation of the form y(t)' = f_1(t,y) + f_2(t,y), where f_1 is treated explicitly and f_2 implicitly
  */
 
