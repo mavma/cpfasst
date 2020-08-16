@@ -1,46 +1,31 @@
-#include "cpf_imex_sweeper.h"
-
+#include "types.h"
+#include <cpf_imex_sweeper.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include "local.h"
+#include "shared.h"
 
-void imex_sweeper_initialize_cb(int* level_index, bool* explicit, bool* implicit) {}
-void imex_sweeper_destroy_cb(int* level_index) {}
+void cpf_imex_sweeper_initialize_cb(int level_index, bool* explicit, bool* implicit) {
+    *explicit = true;
+    *implicit = true;
+}
+void cpf_imex_sweeper_destroy_cb(int level_index) {}
 
-void imex_sweeper_f_eval_cb(void** y, double* t, int* level_index, void** f, int* piece) {
-    custom_data_t *cy = (custom_data_t*) (*y);
-    custom_data_t *cf = (custom_data_t*) (*f);
-
-    switch(*piece) {
+void cpf_imex_sweeper_f_eval_cb(encap_data_t* y, double t, int level_index, encap_data_t* f, int piece) {
+    switch(piece) {
         case 1: // Explicit piece
-            cf->y = local_prm.lam1*cy->y;
+            f->val = ex2_prm.lam1 * y->val;
             break;
         case 2: // Implicit piece
-            cf->y = local_prm.lam2*cy->y;
+            f->val = ex2_prm.lam1 * y->val;
             break;
         default:
-            printf("Bad case for piece in f_eval: %d", *piece);
+            printf("Bad case for piece in f_eval: %d", piece);
             exit(0);
             break;
     }
-    return;
 }
 
-void imex_sweeper_f_comp_cb(void** y, double* t, double* dtq, void** rhs, int* level_index, void** f, int* piece) {
-    custom_data_t *cy = (custom_data_t*) (*y);
-    custom_data_t *cf = (custom_data_t*) (*f);
-    custom_data_t *crhs = (custom_data_t*) (*rhs);
-
-    switch(*piece) {
-        case 2:
-            cy->y = crhs->y/(1.0 - (*dtq)*local_prm.lam2);
-            cf->y = (cy->y - crhs->y)/(*dtq);
-            break;
-        default:
-            printf("Bad case for piece in f_comp: %d", *piece);
-            exit(0);
-            break;
-    }
-    return;
+void cpf_imex_sweeper_f_comp_cb(encap_data_t* y, double t, double dtq, encap_data_t* rhs, int level_index, encap_data_t* f) {
+    y->val = rhs->val / (1.0 - dtq * ex2_prm.lam2);
+    f->val = (y->val - rhs->val)/dtq;
 }

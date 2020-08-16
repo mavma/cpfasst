@@ -2,7 +2,7 @@
 
 // user-defined data structure for scalar
 typedef struct ex2_data_struct {
-    double y;
+    double val;
 } ex2_data_t;
 
 typedef ex2_data_t encap_data_t;

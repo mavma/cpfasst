@@ -6,9 +6,7 @@
 #include <cpf_interface.h>
 #include <cpf_parameters.h>
 #include "probin.h"
-
-ex2_prm_t ex2_prm;
-char fname[256] = "probin.nml";
+#include "shared.h"
 
 int main(int argc, char** argv) {
     char input_nml[256];

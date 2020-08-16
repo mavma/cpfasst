@@ -2,7 +2,6 @@
 #include <cpf_imex_sweeper.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "utils.h"
 #include "shared.h"
 #include "fft_tool.h"
@@ -93,7 +92,7 @@ void cpf_imex_sweeper_f_comp_cb(encap_data_t* y, double t, double dtq, encap_dat
     ex3_sweeper_t *this = sweepers[level_index-1];
 
     if(ex3_prm.imex_stat == 0) {
-        // fully explicit TODO:necessary? test
+        // fully explicit
         for(size_t i=0; i < y->nx; i++) {
             y->arr[i] = rhs->arr[i];
             f->arr[i] = 0;
