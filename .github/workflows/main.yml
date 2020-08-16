@@ -32,7 +32,7 @@ jobs:
       - name: Compile cpfasst example
         run: (cd examples/${{ matrix.tutorial }} && make V=1 GCC10=FALSE MPI=${{ matrix.mpi }})
       - name: Compile LibPFASST tutorials
-        run: make V=1 GCC10=FALSE MPI=${{ matrix.mpi }} libpfasst_examples
+        run: make DEBUG=TRUE ASAN=1 V=1 GCC10=FALSE MPI=${{ matrix.mpi }} libpfasst_examples
       - name: Test sequential
         run: ./tests/test_example.py ${{ matrix.tutorial }}
       - name: Test parallel (mpich)
